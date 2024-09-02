@@ -28,6 +28,11 @@
             background-color: red;
             color: white;
         }
+        .reserved {
+            background-color: gray;
+            color: white;
+            cursor: not-allowed;
+        }
         .floor-plan-image {
             max-width: 100%;
             height: auto;
@@ -52,10 +57,10 @@
 <div class="bg-black text-white py-12">
     <div class="container mx-auto">
         <h1 class="text-3xl font-bold text-center mb-4">MAKE A RESERVATION</h1>
-        <p class="text-center mb-8">Join us for an evening of great food, crafted cocktails, and lively atmosphere at our restobar. Whether you're planning a casual night out or a special celebration, reserving your table ensures you won't miss out on our unique blend of flavor and fun. Reserve now and let us take care of the rest!</p>
+        <p class="text-center mb-8">Join us for an evening of great food, crafted cocktails, and lively atmosphere at our restobar...</p>
 
         <div class="bg-white text-black p-8 rounded shadow-lg mx-auto max-w-md">
-            <h2 class="text-xl font-bold mb-4 text-center">Selected Date: {{ $selectedDate }}</h2> <!-- Display selected date -->
+            <h2 class="text-xl font-bold mb-4 text-center">Selected Date: {{ $selectedDate }}</h2>
             <h2 class="text-xl font-bold mb-4 text-center">SELECT A TABLE TYPE</h2>
             <select id="tableType" class="w-full p-2 border border-gray-300 rounded mb-4">
                 <option value="">Choose Table Type</option>
@@ -70,12 +75,13 @@
                 <p class="text-center text-sm">Click on a table to select it!</p>
                 <div class="floor-plan" id="vipTables" style="display: none;">
                     @foreach (['Me1', 'Me2', 'Me3', 'Me4', 'Me5', 'Me6', 'Me7', 'MB1', 'MB2', 'MB3', 'MB4', 'MB5', 'MB6', 'MC1', 'MC2', 'MC3', 'MC4', 'MD1', 'MD2', 'MD3'] as $vipTable)
-                        <div id="table-{{ $vipTable }}" class="table-cell" data-table="{{ $vipTable }}">{{ $vipTable }}</div>
+                        <div id="table-{{ $vipTable }}" class="table-cell {{ in_array($vipTable, $reservedTables) ? 'reserved' : '' }}" data-table="{{ $vipTable }}">{{ $vipTable }}</div>
                     @endforeach
                 </div>
                 <div class="floor-plan" id="cocktailTables" style="display: none;">
                     @foreach (range(1, 28) as $num)
-                        <div id="table-A{{ $num }}" class="table-cell" data-table="A{{ $num }}">A{{ $num }}</div>
+                        @php $tableId = "A{$num}"; @endphp
+                        <div id="table-{{ $tableId }}" class="table-cell {{ in_array($tableId, $reservedTables) ? 'reserved' : '' }}" data-table="{{ $tableId }}">{{ $tableId }}</div>
                     @endforeach
                 </div>
 
@@ -154,6 +160,9 @@
 
         tableCells.forEach(cell => {
             cell.addEventListener('click', function() {
+                if (this.classList.contains('reserved')) {
+                    return; // Don't allow selecting reserved tables
+                }
                 if (selectedTable) {
                     selectedTable.classList.remove('selected');
                 }

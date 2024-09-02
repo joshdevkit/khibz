@@ -11,7 +11,7 @@
         <!-- Filter for Number of Rows -->
         <div class="flex items-center">
             <label for="rowsPerPage" class="mr-2 text-sm text-gray-600">Show</label>
-            <select id="rowsPerPage" class="border border-gray-300 rounded p-1" onchange="handleSearch()">
+            <select id="rowsPerPage" class="border border-gray-300 rounded p-1" onchange="changeRowsPerPage(this.value)">
                 <option value="10" {{ request('rowsPerPage') == 10 ? 'selected' : '' }}>10</option>
                 <option value="25" {{ request('rowsPerPage') == 25 ? 'selected' : '' }}>25</option>
                 <option value="50" {{ request('rowsPerPage') == 50 ? 'selected' : '' }}>50</option>
@@ -19,57 +19,29 @@
             </select>
         </div>
 
-        <!-- Search Input -->
+        <!-- Search Input and Date Range Filter -->
         <div class="flex items-center">
-            <input type="text" id="search" class="border border-gray-300 rounded p-1" placeholder="Search..." value="{{ request('search') }}" oninput="handleSearch()">
+            <input type="text" id="search" class="border border-gray-300 rounded p-1 mr-2" placeholder="Search..." value="{{ request('search') }}" oninput="handleSearch()">
+            
+            <!-- Date Range Filter -->
+            <label for="startDate" class="mr-2 text-sm text-gray-600">From</label>
+            <input type="date" id="startDate" class="border border-gray-300 rounded p-1 mr-2" value="{{ request('startDate') }}" onchange="handleSearch()">
+            <label for="endDate" class="mr-2 text-sm text-gray-600">To</label>
+            <input type="date" id="endDate" class="border border-gray-300 rounded p-1 mr-2" value="{{ request('endDate') }}" onchange="handleSearch()">
+
             <button onclick="generateReport()" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Generate Report</button>
         </div>
     </div>
 
     <!-- Table Container -->
-    <div id="tableContainer" class="overflow-y-auto rounded-lg border border-gray-200" style="max-height: 500px;">
-        <table class="min-w-full bg-white divide-y divide-gray-200">
-            <thead class="bg-gray-50">
-                <tr>
-                    <th scope="col" class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wide">Name</th>
-                    <th scope="col" class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wide">Email</th>
-                    <th scope="col" class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wide">Contact</th>
-                    <th scope="col" class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wide">Guests</th>
-                    <th scope="col" class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wide">Table Number</th>
-                    <th scope="col" class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wide">Selected Date</th>
-                    <th scope="col" class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wide">Status</th>
-                    <th scope="col" class="py-3 px-4 text-left text-sm font-medium text-gray-600 uppercase tracking-wide">Actions</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-200" id="reservationsTableBody">
-                @forelse($completedReservations as $reservation)
-                <tr class="hover:bg-gray-50 transition duration-150">
-                    <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ $reservation->name }}</td>
-                    <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ $reservation->email }}</td>
-                    <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ $reservation->contact }}</td>
-                    <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ $reservation->guests }}</td>
-                    <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ $reservation->table_number }}</td>
-                    <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ \Carbon\Carbon::parse($reservation->date)->format('d-m-Y') }}</td>
-                    <td class="py-4 px-4 whitespace-nowrap text-sm text-green-700">Completed</td>
-                    <td class="py-4 px-4 whitespace-nowrap">
-                        <button type="button" onclick="showModal({{ $reservation->id }})" class="text-gray-600 hover:text-gray-800 transition duration-150 focus:outline-none" title="See Details">
-                            <i class="fas fa-eye"></i>
-                        </button>
-                    </td>
-                </tr>
-                @empty
-                <tr>
-                    <td colspan="8" class="py-4 px-4 text-center text-sm text-gray-600">No completed reservations found.</td>
-                </tr>
-                @endforelse
-            </tbody>
-        </table>
+    <div id="tableContainer" class="overflow-x-auto rounded-lg border border-gray-200">
+        @include('admin.partials.reservations_table', ['completedReservations' => $completedReservations])
     </div>
 </div>
 
 <!-- Modal Structure for Viewing Details -->
 <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 opacity-0 invisible z-50">
-    <div class="bg-white w-11/12 md:max-w-lg mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95">
+    <div class="bg-white w-11/12 max-w-md mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95 overflow-hidden">
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-4 border-b">
             <h3 class="text-lg font-semibold text-gray-800">Reservation Details</h3>
@@ -78,7 +50,7 @@
             </button>
         </div>
         <!-- Modal Content -->
-        <div id="modalContent" class="p-6">
+        <div id="modalContent" class="p-4 max-h-[60vh] overflow-y-auto">
             <!-- Dynamic content will be injected here -->
         </div>
         <!-- Modal Footer -->
@@ -90,7 +62,7 @@
 
 <!-- Larger Modal Structure for Viewing Payment Screenshot -->
 <div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 opacity-0 invisible z-50">
-    <div class="bg-white w-full max-w-3xl mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95">
+    <div class="bg-white w-11/12 max-w-2xl mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95 overflow-hidden">
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-4 border-b">
             <h3 class="text-lg font-semibold text-gray-800">Payment Screenshot</h3>
@@ -99,8 +71,8 @@
             </button>
         </div>
         <!-- Modal Content -->
-        <div id="screenshotContent" class="p-6">
-            <!-- Dynamic screenshot content will be injected here -->
+        <div id="screenshotContent" class="p-4 max-h-[70vh] overflow-y-auto flex justify-center items-center">
+            <!-- Dynamic content for screenshot will be injected here -->
         </div>
     </div>
 </div>
@@ -111,10 +83,14 @@
     function handleSearch() {
         const searchQuery = document.getElementById('search').value;
         const rowsPerPage = document.getElementById('rowsPerPage').value;
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
 
         const url = new URL(window.location.href);
         url.searchParams.set('search', searchQuery);
         url.searchParams.set('rowsPerPage', rowsPerPage);
+        if (startDate) url.searchParams.set('startDate', startDate);
+        if (endDate) url.searchParams.set('endDate', endDate);
 
         fetch(url, {
             headers: {
@@ -123,13 +99,36 @@
         })
         .then(response => response.text())
         .then(data => {
-            document.querySelector('#tableContainer').innerHTML = data; // Correctly replace the entire table content
+            document.querySelector('.overflow-x-auto').innerHTML = data;
         })
         .catch(error => console.error('Error:', error));
     }
 
     function generateReport() {
-        // Create a printable area dynamically
+        const startDate = document.getElementById('startDate').value;
+        const endDate = document.getElementById('endDate').value;
+
+        let filteredReservations = completedReservations;
+
+        // Filter reservations by date range
+        if (startDate || endDate) {
+            filteredReservations = completedReservations.filter(reservation => {
+                const reservationDate = new Date(reservation.date);
+                const start = startDate ? new Date(startDate) : null;
+                const end = endDate ? new Date(endDate) : null;
+
+                // Check if reservation date is within the range
+                if (start && end) {
+                    return reservationDate >= start && reservationDate <= end;
+                } else if (start) {
+                    return reservationDate >= start;
+                } else if (end) {
+                    return reservationDate <= end;
+                }
+                return true;
+            });
+        }
+
         let printContents = `
             <h2>Completed Reservations Report</h2>
             <table border="1" cellpadding="10" cellspacing="0" style="width: 100%; border-collapse: collapse;">
@@ -147,7 +146,7 @@
                 <tbody>
         `;
 
-        completedReservations.forEach(reservation => {
+        filteredReservations.forEach(reservation => {
             printContents += `
                 <tr>
                     <td>${reservation.name}</td>
@@ -229,7 +228,7 @@
                         </p>
                         <p class="flex items-center mb-2">
                             <i class="fas fa-info-circle text-gray-500 mr-2"></i>
-                            <strong>Status:</strong> Completed
+                            <strong>Status:</strong> ${reservation.status}
                         </p>
                         <p class="flex items-center mb-2">
                             <i class="fas fa-calendar-alt text-gray-500 mr-2"></i>
@@ -239,18 +238,21 @@
                             <i class="fas fa-file-image text-gray-500 mr-2"></i>
                             <strong>Payment Screenshot:</strong>
                         </p>
-                        <img src="/storage/${reservation.screenshot}" alt="Payment Screenshot" class="cursor-pointer w-full h-auto rounded shadow-sm" onclick="showScreenshotModal('/storage/${reservation.screenshot}')">` : `<p class="flex items-center mb-2">
+                        <div class="flex justify-center">
+                            <img src="/storage/${reservation.screenshot}" alt="Payment Screenshot" class="max-w-full max-h-[300px] rounded-lg shadow-md border border-gray-200 cursor-pointer" onclick="showScreenshotModal('/storage/${reservation.screenshot}')">
+                        </div>` : `<p class="flex items-center mb-2">
                             <i class="fas fa-file-image text-gray-500 mr-2"></i>
                             <strong>Payment Screenshot:</strong> No Screenshot Available
                         </p>`}
                     </div>
                 </div>
             `;
+
             document.getElementById('modalContent').innerHTML = modalContent;
             const modal = document.getElementById('detailsModal');
-            modal.classList.remove('opacity-0', 'invisible');
-            modal.classList.add('opacity-100', 'visible');
-            modal.querySelector('.transform').classList.add('scale-100');
+            modal.classList.remove('opacity-0', 'invisible'); // Show the modal
+            modal.classList.add('opacity-100', 'visible'); // Make it fully visible
+            modal.querySelector('.transform').classList.add('scale-100'); // Smoothly open the modal
         } else {
             console.log('Reservation not found');
         }
@@ -258,30 +260,30 @@
 
     function closeModal() {
         const modal = document.getElementById('detailsModal');
-        modal.classList.add('opacity-0', 'invisible');
-        modal.classList.remove('opacity-100', 'visible');
-        modal.querySelector('.transform').classList.remove('scale-100');
+        modal.classList.add('opacity-0', 'invisible'); // Hide the modal
+        modal.classList.remove('opacity-100', 'visible'); // Ensure it's properly hidden
+        modal.querySelector('.transform').classList.remove('scale-100'); // Smoothly close the modal
     }
 
     function showScreenshotModal(imageSrc) {
-        document.getElementById('screenshotContent').innerHTML = `<img src="${imageSrc}" alt="Payment Screenshot" class="w-full h-auto rounded shadow-lg">`;
+        document.getElementById('screenshotContent').innerHTML = `<img src="${imageSrc}" alt="Payment Screenshot" class="max-w-full max-h-[65vh] rounded shadow-lg">`;
         const modal = document.getElementById('screenshotModal');
-        modal.classList.remove('opacity-0', 'invisible');
-        modal.classList.add('opacity-100', 'visible');
-        modal.querySelector('.transform').classList.add('scale-100');
+        modal.classList.remove('opacity-0', 'invisible'); // Show the modal
+        modal.classList.add('opacity-100', 'visible'); // Make it fully visible
+        modal.querySelector('.transform').classList.add('scale-100'); // Smoothly open the modal
     }
 
     function closeScreenshotModal() {
         const modal = document.getElementById('screenshotModal');
-        modal.classList.add('opacity-0', 'invisible');
-        modal.classList.remove('opacity-100', 'visible');
-        modal.querySelector('.transform').classList.remove('scale-100');
+        modal.classList.add('opacity-0', 'invisible'); // Hide the modal
+        modal.classList.remove('opacity-100', 'visible'); // Ensure it's properly hidden
+        modal.querySelector('.transform').classList.remove('scale-100'); // Smoothly close the modal
     }
 
     function changeRowsPerPage(value) {
         const url = new URL(window.location.href);
         url.searchParams.set('rowsPerPage', value);
-        handleSearch();
+        window.location.href = url.toString();
     }
 </script>
 @endsection

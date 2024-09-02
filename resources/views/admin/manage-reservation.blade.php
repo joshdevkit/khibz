@@ -42,7 +42,7 @@
                         <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ $reservation->table_number }}</td>
                         <td class="py-4 px-4 whitespace-nowrap">
                             <span class="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full 
-                                {{ $reservation->status === 'Completed' ? 'bg-green-100 text-green-700' : ($reservation->status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-red-100 text-red-700') }}">
+                                {{ $reservation->status === 'Completed' ? 'bg-green-100 text-green-700' : ($reservation->status === 'Pending' ? 'bg-yellow-100 text-yellow-700' : ($reservation->status === 'Cancelled' ? 'bg-red-100 text-red-700' : 'bg-gray-100 text-gray-700')) }}">
                                 {{ $reservation->status }}
                             </span>
                         </td>
@@ -83,7 +83,7 @@
 
 <!-- Modal Structure for Viewing Details -->
 <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 opacity-0 invisible z-50">
-    <div class="bg-white w-11/12 md:max-w-lg mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95">
+    <div class="bg-white w-11/12 max-w-md mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95 overflow-hidden">
         <!-- Modal Header -->
         <div class="flex justify-between items-center p-4 border-b">
             <h3 class="text-lg font-semibold text-gray-800">Reservation Details</h3>
@@ -92,7 +92,7 @@
             </button>
         </div>
         <!-- Modal Content -->
-        <div id="modalContent" class="p-6">
+        <div id="modalContent" class="p-4 max-h-[60vh] overflow-y-auto">
             <!-- Dynamic content will be injected here -->
         </div>
         <!-- Modal Footer -->
@@ -122,29 +122,13 @@
                     <select id="status" name="status" class="block w-full mt-1 border-gray-300 rounded-md shadow-sm focus:border-indigo-500 focus:ring focus:ring-indigo-500">
                         <option value="Pending">Pending</option>
                         <option value="Completed">Completed</option>
+                        <option value="Cancelled">Cancelled</option> <!-- New Cancel option -->
                     </select>
                 </div>
                 <div class="flex justify-end">
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Save Changes</button>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
-
-<!-- Larger Modal Structure for Viewing Screenshot -->
-<div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 opacity-0 invisible z-50">
-    <div class="bg-white w-full max-w-3xl mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95">
-        <!-- Modal Header -->
-        <div class="flex justify-between items-center p-4 border-b">
-            <h3 class="text-lg font-semibold text-gray-800">Payment Screenshot</h3>
-            <button onclick="closeScreenshotModal()" class="text-gray-600 hover:text-gray-800 focus:outline-none">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-        <!-- Modal Content -->
-        <div id="screenshotContent" class="p-6">
-            <!-- Dynamic content for screenshot will be injected here -->
         </div>
     </div>
 </div>
@@ -171,6 +155,23 @@
                 <button type="button" onclick="closeDeleteModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500 mr-2">Cancel</button>
                 <button type="submit" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Delete</button>
             </form>
+        </div>
+    </div>
+</div>
+
+<!-- Larger Modal Structure for Viewing Screenshot -->
+<div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 opacity-0 invisible z-50">
+    <div class="bg-white w-11/12 max-w-2xl mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95 overflow-hidden">
+        <!-- Modal Header -->
+        <div class="flex justify-between items-center p-4 border-b">
+            <h3 class="text-lg font-semibold text-gray-800">Payment Screenshot</h3>
+            <button onclick="closeScreenshotModal()" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <!-- Modal Content -->
+        <div id="screenshotContent" class="p-4 max-h-[70vh] overflow-y-auto flex justify-center items-center">
+            <!-- Dynamic content for screenshot will be injected here -->
         </div>
     </div>
 </div>
@@ -219,7 +220,9 @@
                             <i class="fas fa-file-image text-gray-500 mr-2"></i>
                             <strong>Payment Screenshot:</strong>
                         </p>
-                        <img src="/storage/${reservation.screenshot}" alt="Payment Screenshot" class="cursor-pointer w-full h-auto rounded shadow-sm" onclick="showScreenshotModal('/storage/${reservation.screenshot}')">` : `<p class="flex items-center mb-2">
+                        <div class="flex justify-center">
+                            <img src="/storage/${reservation.screenshot}" alt="Payment Screenshot" class="max-w-full max-h-[300px] rounded-lg shadow-md border border-gray-200 cursor-pointer" onclick="showScreenshotModal('/storage/${reservation.screenshot}')">
+                        </div>` : `<p class="flex items-center mb-2">
                             <i class="fas fa-file-image text-gray-500 mr-2"></i>
                             <strong>Payment Screenshot:</strong> No Screenshot Available
                         </p>`}
@@ -258,21 +261,6 @@
         modal.querySelector('.transform').classList.remove('scale-100'); // Smoothly close the modal
     }
 
-    function showScreenshotModal(imageSrc) {
-        document.getElementById('screenshotContent').innerHTML = `<img src="${imageSrc}" alt="Payment Screenshot" class="w-full h-auto rounded shadow-lg">`;
-        const modal = document.getElementById('screenshotModal');
-        modal.classList.remove('opacity-0', 'invisible'); // Show the modal
-        modal.classList.add('opacity-100', 'visible'); // Make it fully visible
-        modal.querySelector('.transform').classList.add('scale-100'); // Smoothly open the modal
-    }
-
-    function closeScreenshotModal() {
-        const modal = document.getElementById('screenshotModal');
-        modal.classList.add('opacity-0', 'invisible'); // Hide the modal
-        modal.classList.remove('opacity-100', 'visible'); // Ensure it's properly hidden
-        modal.querySelector('.transform').classList.remove('scale-100'); // Smoothly close the modal
-    }
-
     function confirmDelete(reservationId) {
         const deleteForm = document.getElementById('deleteForm');
         deleteForm.action = `/admin/reservations/${reservationId}`; // Set the form action
@@ -284,6 +272,21 @@
 
     function closeDeleteModal() {
         const modal = document.getElementById('deleteModal');
+        modal.classList.add('opacity-0', 'invisible'); // Hide the modal
+        modal.classList.remove('opacity-100', 'visible'); // Ensure it's properly hidden
+        modal.querySelector('.transform').classList.remove('scale-100'); // Smoothly close the modal
+    }
+
+    function showScreenshotModal(imageSrc) {
+        document.getElementById('screenshotContent').innerHTML = `<img src="${imageSrc}" alt="Payment Screenshot" class="max-w-full max-h-[65vh] rounded shadow-lg">`;
+        const modal = document.getElementById('screenshotModal');
+        modal.classList.remove('opacity-0', 'invisible'); // Show the modal
+        modal.classList.add('opacity-100', 'visible'); // Make it fully visible
+        modal.querySelector('.transform').classList.add('scale-100'); // Smoothly open the modal
+    }
+
+    function closeScreenshotModal() {
+        const modal = document.getElementById('screenshotModal');
         modal.classList.add('opacity-0', 'invisible'); // Hide the modal
         modal.classList.remove('opacity-100', 'visible'); // Ensure it's properly hidden
         modal.querySelector('.transform').classList.remove('scale-100'); // Smoothly close the modal

@@ -17,9 +17,14 @@ class ReservationController extends Controller
     // Display reservation details based on the selected date
     public function details(Request $request)
     {
-        $reservations = Reservation::all();
         $selectedDate = $request->input('date');
-        return view('reservation-details', compact('reservations', 'selectedDate'));
+
+        // Fetch reserved tables for the selected date
+        $reservedTables = Reservation::whereDate('date', $selectedDate)
+            ->pluck('table_number')
+            ->toArray(); // Get the list of reserved table numbers
+
+        return view('reservation-details', compact('reservedTables', 'selectedDate'));
     }
 
     // Show the reservation form with selected table and date
@@ -109,7 +114,4 @@ class ReservationController extends Controller
 
         return redirect()->route('admin.reservations')->with('error', 'Reservation not found.');
     }
-    
-
 }
-

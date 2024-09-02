@@ -41,6 +41,8 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/reservations/update-status', [ReservationController::class, 'updateStatus'])->name('reservation.update.status');
     Route::get('/admin/reports', [ReportController::class, 'index'])->name('admin.reports');
     Route::delete('/admin/reservations/{id}', [ReservationController::class, 'delete'])->name('reservation.delete');
+    Route::post('/admin/reservations/mark-done', [ReservationController::class, 'markReservationsAsDone'])->name('reservation.markDone');
+    Route::get('/admin/reservations/history', [ReservationController::class, 'history'])->name('admin.reservations.history');
 });
 
 // Authentication routes

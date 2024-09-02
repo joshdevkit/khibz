@@ -20,13 +20,13 @@
             </thead>
             <tbody class="divide-y divide-gray-200">
                 @php
-                    // Filter reservations to exclude completed ones
-                    $nonCompletedReservations = $reservations->filter(function($reservation) {
-                        return $reservation->status !== 'Completed';
+                    // Filter reservations to exclude completed and done ones
+                    $filteredReservations = $reservations->filter(function($reservation) {
+                        return !in_array($reservation->status, ['Completed', 'Done']);
                     });
                 @endphp
 
-                @if($nonCompletedReservations->isEmpty())
+                @if($filteredReservations->isEmpty())
                     <!-- No Reservations Found Message -->
                     <tr>
                         <td colspan="6" class="py-4 px-4 text-center text-sm text-gray-600">
@@ -34,8 +34,8 @@
                         </td>
                     </tr>
                 @else
-                    <!-- Display Non-Completed Reservations -->
-                    @foreach($nonCompletedReservations as $reservation)
+                    <!-- Display Non-Completed and Non-Done Reservations -->
+                    @foreach($filteredReservations as $reservation)
                     <tr class="hover:bg-gray-50 transition duration-150">
                         <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ $reservation->name }}</td>
                         <td class="py-4 px-4 whitespace-nowrap text-sm text-gray-800">{{ $reservation->guests }}</td>
@@ -215,6 +215,10 @@
                         <p class="flex items-center mb-2">
                             <i class="fas fa-calendar-alt text-gray-500 mr-2"></i>
                             <strong>Selected Date:</strong> ${new Date(reservation.date).toLocaleDateString()}
+                        </p>
+                        <p class="flex items-center mb-2">
+                            <i class="fas fa-calendar-day text-gray-500 mr-2"></i>
+                            <strong>Booked Date:</strong> ${new Date(reservation.created_at).toLocaleDateString()}
                         </p>
                         ${reservation.screenshot ? `<p class="flex items-center mb-2">
                             <i class="fas fa-file-image text-gray-500 mr-2"></i>

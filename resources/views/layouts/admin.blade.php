@@ -40,13 +40,19 @@
                     </li>
                     <li>
                         <a href="{{ route('admin.users') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
-                            <i class="fas fa-users mr-3"></i> Manage Users
+                            <i class="fas fa-users mr-3"></i> Manage Events
                         </a>
                     </li>
                     <!-- New Reports Link -->
                     <li>
                         <a href="{{ route('admin.reports') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
                             <i class="fas fa-chart-line mr-3"></i> Reports
+                        </a>
+                    </li>
+                    <!-- New History Link -->
+                    <li>
+                        <a href="{{ route('admin.reservations.history') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
+                            <i class="fas fa-history mr-3"></i> History
                         </a>
                     </li>
                 </ul>

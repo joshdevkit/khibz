@@ -91,18 +91,13 @@ class ReservationController extends Controller
             $reservation->status = $request->input('status');
             $reservation->save();
     
-            // Check if the status is changed to 'Completed'
-            if ($reservation->status === 'Completed') {
-                // After marking as completed, remove it from the current reservations view
-                return redirect()->route('admin.reservations')->with('success', 'Reservation status updated to Completed and moved to Reports!');
-            }
-    
             return redirect()->route('admin.reservations')->with('success', 'Reservation status updated successfully!');
         }
     
         return redirect()->route('reservation.index')->with('error', 'Reservation not found.');
     }
 
+    // Delete a reservation
     public function delete($id)
     {
         $reservation = Reservation::find($id);
@@ -114,4 +109,54 @@ class ReservationController extends Controller
 
         return redirect()->route('admin.reservations')->with('error', 'Reservation not found.');
     }
+
+    // Mark all completed reservations as done
+    public function markReservationsAsDone()
+    {
+        // Get all completed reservations
+        $reservations = Reservation::where('status', 'Completed')->get();
+
+        if ($reservations->isEmpty()) {
+            return response()->json(['success' => false, 'message' => 'No completed reservations found.']);
+        }
+
+        foreach ($reservations as $reservation) {
+            // Update each reservation status to 'Done'
+            $reservation->status = 'Done';
+            $reservation->save();
+        }
+
+        return response()->json(['success' => true, 'message' => 'All completed reservations have been moved to history.']);
+    }
+
+    public function history(Request $request)
+    {
+        $query = Reservation::query();
+    
+        // Handle search filter
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('contact', 'like', "%{$search}%")
+                  ->orWhere('table_number', 'like', "%{$search}%");
+        }
+    
+        // Handle rows per page
+        $rowsPerPage = $request->input('rowsPerPage', 10);
+        if ($rowsPerPage === 'all') {
+            $historyReservations = $query->where('status', 'Done')->get();
+        } else {
+            $historyReservations = $query->where('status', 'Done')->paginate($rowsPerPage);
+        }
+    
+        if ($request->ajax()) {
+            return view('admin.partials.history_table', compact('historyReservations'))->render();
+        }
+    
+        return view('admin.history', compact('historyReservations'));
+    }
+    
+    
+    
 }

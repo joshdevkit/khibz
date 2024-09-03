@@ -6,9 +6,7 @@
 <div class="bg-white p-8 rounded-lg shadow mb-8">
     <h2 class="text-2xl font-semibold mb-6 text-gray-800">Completed Reservations Report</h2>
 
-    <!-- Search and Filter Section -->
     <div class="flex items-center justify-between mb-4">
-        <!-- Filter for Number of Rows -->
         <div class="flex items-center">
             <label for="rowsPerPage" class="mr-2 text-sm text-gray-600">Show</label>
             <select id="rowsPerPage" class="border border-gray-300 rounded p-1" onchange="handleSearch()">
@@ -19,11 +17,9 @@
             </select>
         </div>
 
-        <!-- Search Input and Date Range Filter -->
         <div class="flex items-center">
             <input type="text" id="search" class="border border-gray-300 rounded p-1 mr-2" placeholder="Search..." value="{{ request('search') }}" oninput="handleSearch()">
             
-            <!-- Date Range Filter -->
             <label for="startDate" class="mr-2 text-sm text-gray-600">From</label>
             <input type="date" id="startDate" class="border border-gray-300 rounded p-1 mr-2" value="{{ request('startDate') }}" onchange="handleSearch()">
             <label for="endDate" class="mr-2 text-sm text-gray-600">To</label>
@@ -32,50 +28,55 @@
             <button onclick="generateReport()" class="ml-4 bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500">Generate Report</button>
         </div>
 
-        <!-- Done Button -->
         <button onclick="markReservationsAsDone()" class="ml-4 bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">Mark as Done</button>
     </div>
 
-    <!-- Table Container -->
     <div id="tableContainer" class="overflow-x-auto rounded-lg border border-gray-200">
         @include('admin.partials.reservations_table', ['completedReservations' => $completedReservations])
     </div>
 </div>
 
-<!-- Modal Structure for Viewing Details -->
 <div id="detailsModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 opacity-0 invisible z-50">
     <div class="bg-white w-11/12 max-w-md mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95 overflow-hidden">
-        <!-- Modal Header -->
         <div class="flex justify-between items-center p-4 border-b">
             <h3 class="text-lg font-semibold text-gray-800">Reservation Details</h3>
             <button onclick="closeModal()" class="text-gray-600 hover:text-gray-800 focus:outline-none">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <!-- Modal Content -->
-        <div id="modalContent" class="p-4 max-h-[60vh] overflow-y-auto">
-            <!-- Dynamic content will be injected here -->
-        </div>
-        <!-- Modal Footer -->
+        <div id="modalContent" class="p-4 max-h-[60vh] overflow-y-auto"></div>
         <div class="flex justify-end p-4 border-t">
             <button onclick="closeModal()" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500">Close</button>
         </div>
     </div>
 </div>
 
-<!-- Larger Modal Structure for Viewing Payment Screenshot -->
 <div id="screenshotModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 opacity-0 invisible z-50">
     <div class="bg-white w-11/12 max-w-2xl mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95 overflow-hidden">
-        <!-- Modal Header -->
         <div class="flex justify-between items-center p-4 border-b">
             <h3 class="text-lg font-semibold text-gray-800">Payment Screenshot</h3>
             <button onclick="closeScreenshotModal()" class="text-gray-600 hover:text-gray-800 focus:outline-none">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <!-- Modal Content -->
-        <div id="screenshotContent" class="p-4 max-h-[70vh] overflow-y-auto flex justify-center items-center">
-            <!-- Dynamic content for screenshot will be injected here -->
+        <div id="screenshotContent" class="p-4 max-h-[70vh] overflow-y-auto flex justify-center items-center"></div>
+    </div>
+</div>
+
+<div id="confirmDoneModal" class="fixed inset-0 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center transition-opacity duration-300 opacity-0 invisible z-50">
+    <div class="bg-white w-11/12 max-w-md mx-auto rounded-lg shadow-lg transform transition-transform duration-300 scale-95 overflow-hidden">
+        <div class="flex justify-between items-center p-4 border-b">
+            <h3 class="text-lg font-semibold text-gray-800">Confirm Mark as Done</h3>
+            <button onclick="closeConfirmModal()" class="text-gray-600 hover:text-gray-800 focus:outline-none">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <div class="p-4">
+            <p>Are you sure you want to mark all completed reservations as done?</p>
+        </div>
+        <div class="flex justify-end p-4 border-t">
+            <button onclick="closeConfirmModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-gray-500">Cancel</button>
+            <button onclick="confirmMarkAsDone()" class="bg-green-500 text-white px-4 py-2 ml-2 rounded hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-green-500">Confirm</button>
         </div>
     </div>
 </div>
@@ -110,17 +111,14 @@
     function generateReport() {
         const startDate = document.getElementById('startDate').value;
         const endDate = document.getElementById('endDate').value;
-
         let filteredReservations = completedReservations;
 
-        // Filter reservations by date range
         if (startDate || endDate) {
             filteredReservations = completedReservations.filter(reservation => {
                 const reservationDate = new Date(reservation.date);
                 const start = startDate ? new Date(startDate) : null;
                 const end = endDate ? new Date(endDate) : null;
 
-                // Check if reservation date is within the range
                 if (start && end) {
                     return reservationDate >= start && reservationDate <= end;
                 } else if (start) {
@@ -199,7 +197,13 @@
     }
 
     function markReservationsAsDone() {
-        // Send a POST request to mark all completed reservations as done
+        const modal = document.getElementById('confirmDoneModal');
+        modal.classList.remove('opacity-0', 'invisible');
+        modal.classList.add('opacity-100', 'visible');
+        modal.querySelector('.transform').classList.add('scale-100');
+    }
+
+    function confirmMarkAsDone() {
         fetch('{{ route("reservation.markDone") }}', {
             method: 'POST',
             headers: {
@@ -210,8 +214,7 @@
         .then(response => response.json())
         .then(data => {
             if (data.success) {
-                alert('All completed reservations have been moved to History.');
-                location.reload(); // Reload the page to update the table
+                location.reload();
             } else {
                 alert('Failed to update reservations.');
             }
@@ -278,9 +281,9 @@
 
             document.getElementById('modalContent').innerHTML = modalContent;
             const modal = document.getElementById('detailsModal');
-            modal.classList.remove('opacity-0', 'invisible'); // Show the modal
-            modal.classList.add('opacity-100', 'visible'); // Make it fully visible
-            modal.querySelector('.transform').classList.add('scale-100'); // Smoothly open the modal
+            modal.classList.remove('opacity-0', 'invisible');
+            modal.classList.add('opacity-100', 'visible');
+            modal.querySelector('.transform').classList.add('scale-100');
         } else {
             console.log('Reservation not found');
         }
@@ -288,30 +291,31 @@
 
     function closeModal() {
         const modal = document.getElementById('detailsModal');
-        modal.classList.add('opacity-0', 'invisible'); // Hide the modal
-        modal.classList.remove('opacity-100', 'visible'); // Ensure it's properly hidden
-        modal.querySelector('.transform').classList.remove('scale-100'); // Smoothly close the modal
+        modal.classList.add('opacity-0', 'invisible');
+        modal.classList.remove('opacity-100', 'visible');
+        modal.querySelector('.transform').classList.remove('scale-100');
     }
 
     function showScreenshotModal(imageSrc) {
         document.getElementById('screenshotContent').innerHTML = `<img src="${imageSrc}" alt="Payment Screenshot" class="max-w-full max-h-[65vh] rounded shadow-lg">`;
         const modal = document.getElementById('screenshotModal');
-        modal.classList.remove('opacity-0', 'invisible'); // Show the modal
-        modal.classList.add('opacity-100', 'visible'); // Make it fully visible
-        modal.querySelector('.transform').classList.add('scale-100'); // Smoothly open the modal
+        modal.classList.remove('opacity-0', 'invisible');
+        modal.classList.add('opacity-100', 'visible');
+        modal.querySelector('.transform').classList.add('scale-100');
     }
 
     function closeScreenshotModal() {
         const modal = document.getElementById('screenshotModal');
-        modal.classList.add('opacity-0', 'invisible'); // Hide the modal
-        modal.classList.remove('opacity-100', 'visible'); // Ensure it's properly hidden
-        modal.querySelector('.transform').classList.remove('scale-100'); // Smoothly close the modal
+        modal.classList.add('opacity-0', 'invisible');
+        modal.classList.remove('opacity-100', 'visible');
+        modal.querySelector('.transform').classList.remove('scale-100');
     }
 
-    function changeRowsPerPage(value) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('rowsPerPage', value);
-        handleSearch();
+    function closeConfirmModal() {
+        const modal = document.getElementById('confirmDoneModal');
+        modal.classList.add('opacity-0', 'invisible');
+        modal.classList.remove('opacity-100', 'visible');
+        modal.querySelector('.transform').classList.remove('scale-100');
     }
 </script>
 @endsection

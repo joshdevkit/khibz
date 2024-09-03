@@ -239,8 +239,10 @@
                 </div>
                 <div class="mb-4">
                     <label for="guests" class="block text-sm font-semibold mb-2">Number of Guests:</label>
-                    <input type="number" id="guests" name="guests" min="1" required class="w-full p-2 border border-gray-300 rounded">
+                    <input type="number" id="guests" name="guests" min="1" max="12" required class="w-full p-2 border border-gray-300 rounded" oninput="checkGuestCount()">
+                    <span id="guestError" class="text-red-500 text-sm"></span>
                 </div>
+                
                 
                 <div class="mb-4">
                     <label for="screenshot" class="block text-sm font-semibold mb-2">Screenshot of Payment:</label>
@@ -394,6 +396,19 @@
 
     function closeSuccessMessage() {
         document.getElementById('successMessage').style.display = 'none';
+    }
+
+    function checkGuestCount() {
+        const guestInput = document.getElementById('guests');
+        const guestError = document.getElementById('guestError');
+        const maxGuests = 12;
+
+        if (parseInt(guestInput.value) > maxGuests) {
+            guestError.textContent = 'The maximum number of guests is 12.';
+            guestInput.value = maxGuests; // Reset to max if exceeded
+        } else {
+            guestError.textContent = '';
+        }
     }
 </script>
 

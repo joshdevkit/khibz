@@ -680,82 +680,83 @@
     @include('layouts._footer')
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const tableTypeSelect = document.getElementById('tableType');
-        const requirementsDiv = document.getElementById('requirements');
-        const tableSelectionDiv = document.getElementById('tableSelection');
-        const vipTablesDiv = document.getElementById('vipTables');
-        const cocktailTablesDiv = document.getElementById('cocktailTables');
-        const selectedTableInput = document.getElementById('selectedTableInput');
-        const selectionError = document.getElementById('selectionError');
+document.addEventListener('DOMContentLoaded', function() {
+    const tableTypeSelect = document.getElementById('tableType');
+    const requirementsDiv = document.getElementById('requirements');
+    const tableSelectionDiv = document.getElementById('tableSelection');
+    const vipTablesDiv = document.getElementById('vipTables');
+    const cocktailTablesDiv = document.getElementById('cocktailTables');
+    const selectedTableInput = document.getElementById('selectedTableInput');
+    const selectionError = document.getElementById('selectionError');
 
-        tableTypeSelect.addEventListener('change', function() {
-            const selectedType = this.value;
-            if (selectedType === 'VIP') {
-                requirementsDiv.innerHTML = `
-                    <h3 class="font-bold">VIP Reservation Requirements:</h3>
-                    <ul>
-                        <li>VIP guests must avail 1 bundle to reserve their VIP couch.</li>
-                        <li>The VIP couch can accommodate 10-12 people.</li>
-                        <li>To secure your reservation, a non-refundable downpayment of Php 1,000 should be settled. This amount will be deducted from the total bill on the day of your reservation.</li>
-                        <li>Your table will be held for a duration of 2 hours. If your party has not arrived within this time, we reserve the right to disregard your reservation. (Waiting time starts at 8PM)</li>
-                        <li>Entrance fee will be charged to your total bill.</li>
-                    </ul>
-                `;
-                tableSelectionDiv.style.display = 'block';
-                vipTablesDiv.style.display = 'grid'; // Show VIP tables
-                cocktailTablesDiv.style.display = 'none'; // Hide Cocktail tables
-            } else if (selectedType === 'Cocktail') {
-                requirementsDiv.innerHTML = `
-                    <h3 class="font-bold">TABLE COCKTAIL RESERVATION:</h3>
-                    <ul>
-                        <li>Minimum of 2 orders of cocktail towers or 1 hard drink.</li>
-                        <li>The VIP couch can accommodate 10-12 people.</li>
-
-                        <li>To secure your reservation, a non-refundable downpayment of Php 1,000 should be settled. This amount will be deducted from the total bill on the day of your reservation.</li>
-                        <li>Your table will be held for a duration of 2 hours. If your party has not arrived within this time, we reserve the right to disregard your reservation. (Waiting time starts at 8PM)</li>
-                    </ul>
-                `;
-                tableSelectionDiv.style.display = 'block';
-                vipTablesDiv.style.display = 'none'; // Hide VIP tables
-                cocktailTablesDiv.style.display = 'grid'; // Show Cocktail tables
-            } else {
-                requirementsDiv.innerHTML = '';
-                tableSelectionDiv.style.display = 'none';
-                vipTablesDiv.style.display = 'none'; 
-                cocktailTablesDiv.style.display = 'none';
-            }
-        });
-
-        const tableCells = document.querySelectorAll('.table-cell');
-        let selectedTable = null;
-
-        tableCells.forEach(cell => {
-            cell.addEventListener('click', function() {
-                if (this.classList.contains('reserved')) {
-                    return; // Don't allow selecting reserved tables
-                }
-                if (selectedTable) {
-                    selectedTable.classList.remove('selected');
-                }
-                this.classList.add('selected');
-                selectedTable = this;
-                selectedTableInput.value = this.getAttribute('data-table'); 
-                selectionError.style.display = 'none'; // Hide error when a table is selected
-            });
-        });
+    tableTypeSelect.addEventListener('change', function() {
+        const selectedType = this.value;
+        if (selectedType === 'VIP') {
+            requirementsDiv.innerHTML = `
+                <h3 class="font-bold">VIP Reservation Requirements:</h3>
+                <ul>
+                    <li>VIP guests must avail 1 bundle to reserve their VIP couch.</li>
+                    <li>The VIP couch can accommodate 10-12 people.</li>
+                    <li>To secure your reservation, a non-refundable downpayment of Php 1,000 should be settled. This amount will be deducted from the total bill on the day of your reservation.</li>
+                    <li>Your table will be held for a duration of 2 hours. If your party has not arrived within this time, we reserve the right to disregard your reservation. (Waiting time starts at 8PM)</li>
+                    <li>Entrance fee will be charged to your total bill.</li>
+                </ul>
+            `;
+            tableSelectionDiv.style.display = 'block';
+            vipTablesDiv.style.display = 'grid'; // Show VIP tables
+            cocktailTablesDiv.style.display = 'none'; // Hide Cocktail tables
+        } else if (selectedType === 'Cocktail') {
+            requirementsDiv.innerHTML = `
+                <h3 class="font-bold">TABLE COCKTAIL RESERVATION:</h3>
+                <ul>
+                    <li>Minimum of 2 orders of cocktail towers or 1 hard drink.</li>
+                    <li>The VIP couch can accommodate 10-12 people.</li>
+                    <li>To secure your reservation, a non-refundable downpayment of Php 1,000 should be settled. This amount will be deducted from the total bill on the day of your reservation.</li>
+                    <li>Your table will be held for a duration of 2 hours. If your party has not arrived within this time, we reserve the right to disregard your reservation. (Waiting time starts at 8PM)</li>
+                </ul>
+            `;
+            tableSelectionDiv.style.display = 'block';
+            vipTablesDiv.style.display = 'none'; // Hide VIP tables
+            cocktailTablesDiv.style.display = 'grid'; // Show Cocktail tables
+        } else {
+            requirementsDiv.innerHTML = '';
+            tableSelectionDiv.style.display = 'none';
+            vipTablesDiv.style.display = 'none'; 
+            cocktailTablesDiv.style.display = 'none';
+        }
     });
 
-    function validateSelection() {
-        const selectedTable = document.getElementById('selectedTableInput').value;
-        const selectionError = document.getElementById('selectionError');
+    const tableCells = document.querySelectorAll('.table-cell');
+    let selectedTable = null;
 
-        if (!selectedTable) {
-            selectionError.style.display = 'block'; // Show error message
-            return false; // Prevent form submission
-        }
-        return true; // Allow form submission
+    tableCells.forEach(cell => {
+        cell.addEventListener('click', function() {
+            // Prevent selection of tables with 'reserved' or 'completed' status
+            if (this.classList.contains('reserved') || this.classList.contains('completed')) {
+                return; // Don't allow selecting reserved or completed tables
+            }
+            if (selectedTable) {
+                selectedTable.classList.remove('selected');
+            }
+            this.classList.add('selected');
+            selectedTable = this;
+            selectedTableInput.value = this.getAttribute('data-table'); 
+            selectionError.style.display = 'none'; // Hide error when a table is selected
+        });
+    });
+});
+
+function validateSelection() {
+    const selectedTable = document.getElementById('selectedTableInput').value;
+    const selectionError = document.getElementById('selectionError');
+
+    if (!selectedTable) {
+        selectionError.style.display = 'block'; // Show error message
+        return false; // Prevent form submission
     }
+    return true; // Allow form submission
+}
+
 </script>
 
 </body>

@@ -6,48 +6,63 @@
     <title>Khibz Lounge - Reservation Details</title>
     @vite('resources/css/app.css')
     <style>
-        .floor-plan {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 5px;
-            max-width: 100%;
-            margin: 20px auto;
-        }
-        .table-cell {
-            border: 2px solid #333;
-            padding: 20px 0;
-            text-align: center;
-            cursor: pointer;
-            width: 50px;
-            height: 50px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .selected {
-            background-color: red;
-            color: white;
-        }
-        .reserved {
-            background-color: gray;
-            color: white;
-            cursor: not-allowed;
-        }
-        .floor-plan-image {
-            max-width: 100%;
-            height: auto;
-            margin: 20px auto;
-            display: block;
-        }
-        #tableSelection {
-            display: none;
-        }
-        .error {
-            color: red;
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-            display: none; /* Hide error by default */
-        }
+    .floor-plan {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+        max-width: 100%;
+        margin: 20px auto;
+    }
+    .table-cell {
+        border: 2px solid #333;
+        padding: 20px 0;
+        text-align: center;
+        cursor: pointer;
+        width: 50px;
+        height: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
+    }
+    .selected {
+        background-color: red;
+        color: white;
+    }
+    .reserved {
+        background-color: gray;
+        color: white;
+        cursor: not-allowed;
+    }
+    .completed {
+        position: relative;
+        cursor: not-allowed;
+    }
+    .completed::after {
+        content: 'X';
+        color: red;
+        font-weight: bold;
+        font-size: 1.5em;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    .floor-plan-image {
+        max-width: 100%;
+        height: auto;
+        margin: 20px auto;
+        display: block;
+    }
+    #tableSelection {
+        display: none;
+    }
+    .error {
+        color: red;
+        font-size: 0.875rem;
+        margin-top: 0.5rem;
+        display: none; /* Hide error by default */
+    }
         .floor-plan-container, .upper-floor-plan-container {
             display: grid;
             grid-template-columns: repeat(14, 1fr);
@@ -362,7 +377,7 @@
     }
 
     .stage {
-        grid-column: 1 / span 4; /* Keep stage small and centered */
+        grid-column: 5 / span 4; /* Keep stage small and centered */
         font-size: 0.4em; /* Reduce font size to a minimum */
         padding: 1px; /* Minimal padding for stage */
     }
@@ -385,6 +400,10 @@
         border: 2px solid #ccc; /* Better border for visibility */
         border-radius: 8px; /* Rounded corners for improved aesthetics */
     }
+
+    .soundtech-booth, .bar, .cr, .stairs {
+            font-size: .4rem;
+        }
 }
 
 /* More Responsive Styling for Upper Floor Plan */
@@ -441,7 +460,7 @@
     }
 
     .stage2 {
-        grid-column: 1 / span 4; /* Adjust to fit new grid */
+        grid-column: 5 / span 8; /* Adjust to fit new grid */
         font-size: 0.3em; /* Minimum font size */
         padding: 1px; /* Minimal padding */
     }
@@ -455,6 +474,45 @@
         font-size: 0.3em; /* Further reduce font size */
         padding: 1px; /* Minimal padding */
     }
+
+        .md1 { grid-column: 3 / span 1; grid-row: 10 / span 5; }
+        .md2 { grid-column: 3 / span 1; grid-row: 5 / span 5; }
+        .md3 { grid-column: 3 / span 1; grid-row: 2 / span 3; }
+
+        /* MC Sections */
+        .mc1 { grid-column: 13 / span 1; grid-row: 14 / span 2; }
+        .mc2 { grid-column: 14 / span 1; grid-row: 9 / span 5; }
+        .mc3 { grid-column: 14 / span 1; grid-row: 5 / span 4; }
+        .mc4 { grid-column: 14 / span 1; grid-row: 2 / span 3; }
+
+        /* MB Sections */
+        .mb1 { grid-column: 3 / span 1; grid-row: 17 / span 3; }
+        .mb2 { grid-column: 6 / span 1; grid-row: 17 / span 1; }
+        .mb3 { grid-column: 10 / span 1; grid-row: 17 / span 1; }
+        .mb4 { grid-column: 3 / span 2; grid-row: 25 / span 1; }
+        .mb5 { grid-column: 5 / span 3; grid-row: 25 / span 1; }
+        .mb6 { grid-column: 8 / span 3; grid-row: 25 / span 1; }
+
+
+        .center {
+            grid-column: 5 / span 8;
+            grid-row: 3 / span 14;
+        }
+
+        .stairs.top-left2 {
+            grid-column: 3 / span 2;
+            grid-row: 15 / span 2;
+        }
+
+        .stairs.top-right2 {
+            grid-column: 14 / span 2;
+            grid-row: 15 / span 1;
+        }
+
+        .stairs.bottom-left2 {
+            grid-column: 15 / span 1;
+            grid-row: 16 / span 2;
+        }
 }
 
     </style>
@@ -484,15 +542,28 @@
                 <p class="text-center text-sm">Click on a table to select it!</p>
                 <div class="floor-plan" id="vipTables" style="display: none;">
                     @foreach (['Me1', 'Me2', 'Me3', 'Me4', 'Me5', 'Me6', 'Me7', 'MB1', 'MB2', 'MB3', 'MB4', 'MB5', 'MB6', 'MC1', 'MC2', 'MC3', 'MC4', 'MD1', 'MD2', 'MD3'] as $vipTable)
-                        <div id="table-{{ $vipTable }}" class="table-cell {{ in_array($vipTable, $reservedTables) ? 'reserved' : '' }}" data-table="{{ $vipTable }}">{{ $vipTable }}</div>
+                        <div id="table-{{ $vipTable }}" 
+                             class="table-cell 
+                             {{ in_array($vipTable, $completedTables) ? 'completed' : '' }} 
+                             {{ in_array($vipTable, $reservedTables) ? 'reserved' : '' }}" 
+                             data-table="{{ $vipTable }}">
+                            {{ $vipTable }}
+                        </div>
                     @endforeach
                 </div>
                 <div class="floor-plan" id="cocktailTables" style="display: none;">
                     @foreach (range(1, 28) as $num)
                         @php $tableId = "A{$num}"; @endphp
-                        <div id="table-{{ $tableId }}" class="table-cell {{ in_array($tableId, $reservedTables) ? 'reserved' : '' }}" data-table="{{ $tableId }}">{{ $tableId }}</div>
+                        <div id="table-{{ $tableId }}" 
+                             class="table-cell 
+                             {{ in_array($tableId, $completedTables) ? 'completed' : '' }} 
+                             {{ in_array($tableId, $reservedTables) ? 'reserved' : '' }}" 
+                             data-table="{{ $tableId }}">
+                            {{ $tableId }}
+                        </div>
                     @endforeach
                 </div>
+                
 
                 <input type="hidden" id="selectedTable" name="selectedTable" value="">
 
@@ -508,89 +579,105 @@
             </div>
         </div>
 
-        <!-- Wrap the floor plans in a container to control their order -->
-        <div class="mt-12 text-center flex justify-center floor-plan-wrapper">
-            <div class="floor-plan-container">
-                <div class="stage">STAGE</div>
-                <div class="soundtech-booth">SOUNDTECH BOOTH</div>
-                <div class="bar">BAR</div>
-                <div class="cr">CR</div>
-                <div class="stairs left">STAIRS</div>
-                <div class="stairs bottom-left">STAIRS</div>
-                <div class="stairs bottom-right">STAIRS</div>
+        <!-- Floor Plan Title and Instruction -->
+        <div class="mt-12 text-center">
+            <h2 class="text-2xl font-bold text-white">FLOOR PLAN</h2>
+            <p class="text-white">You may check the table layout for your table reference!</p>
+        </div>
 
-                <!-- Seats -->
-                <div class="seat a1">A1</div>
-                <div class="seat a2">A2</div>
-                <div class="seat a3">A3</div>
-                <div class="seat a4">A4</div>
-                <div class="seat a5">A5</div>
-                <div class="seat a6">A6</div>
-                <div class="seat a7">A7</div>
-                <div class="seat a8">A8</div>
-                <div class="seat a9">A9</div>
-                <div class="seat a10">A10</div>
-                <div class="seat a11">A11</div>
-                <div class="seat a12">A12</div>
-                <div class="seat a13">A13</div>
-                <div class="seat a14">A14</div>
-                <div class="seat a15">A15</div>
-                <div class="seat a16">A16</div>
-                <div class="seat a17">A17</div>
-                <div class="seat a18">A18</div>
-                <div class="seat a19">A19</div>
-                <div class="seat a20">A20</div>
-                <div class="seat a21">A21</div>
-                <div class="seat a22">A22</div>
-                <div class="seat a23">A23</div>
-                <div class="seat a24">A24</div>
-                <div class="seat a25">A25</div>
-                <div class="seat a26">A26</div>
-                <div class="seat a27">A27</div>
-                <div class="seat a28">A28</div>
-
-                <!-- ME Sections -->
-                <div class="me me1">ME1</div>
-                <div class="me me2">ME2</div>
-                <div class="me me3">ME3</div>
-                <div class="me me4">ME4</div>
-                <div class="me me5">ME5</div>
-                <div class="me me6">ME6</div>
-                <div class="me me7">ME7</div>
-            </div>
-
-            <div class="upper-floor-plan-container">
-                <div class="stage2">STAGE</div>
-                <div class="stairs top-left2">STAIRS</div>
-                <div class="stairs top-right2">STAIRS</div>
-                <div class="stairs bottom-right2">STAIRS</div>
-                <div class="stairs bottom-left2">CR</div>
-                
-                <!-- MD and MC Sections -->
-                <div class="md md1">MD1</div>
-                <div class="md md2">MD2</div>
-                <div class="md md3">MD3</div>
-                <div class="mc mc1">MC1</div>
-                <div class="mc mc2">MC2</div>
-                <div class="mc mc3">MC3</div>
-                <div class="mc mc4">MC4</div>
-
-                <!-- MB Sections -->
-                <div class="mb mb1">MB1</div>
-                <div class="mb mb2">MB2</div>
-                <div class="mb mb3">MB3</div>
-                <div class="mb mb4">MB4</div>
-                <div class="mb mb5">MB5</div>
-                <div class="mb mb6">MB6</div>
-
-                <!-- Center Block -->
-                <div class="center"></div>
+    
+            <!-- Wrap the floor plans in a container to control their order -->
+            <div class="mt-10 text-center flex justify-center floor-plan-wrapper">
+    
+                <!-- GROUND FLOOR Plan -->
+                <div class="text-white text-center mb-2">
+                    <h3 class="text-xl font-bold">GROUND FLOOR</h3>
+                </div>
+                <div class="floor-plan-container">
+                    <div class="stage">STAGE</div>
+                    <div class="soundtech-booth">SOUNDTECH BOOTH</div>
+                    <div class="bar">BAR</div>
+                    <div class="cr">CR</div>
+                    <div class="stairs left">STAIRS</div>
+                    <div class="stairs bottom-left">STAIRS</div>
+                    <div class="stairs bottom-right">STAIRS</div>
+    
+                    <!-- Seats -->
+                    <div class="seat a1">A1</div>
+                    <div class="seat a2">A2</div>
+                    <div class="seat a3">A3</div>
+                    <div class="seat a4">A4</div>
+                    <div class="seat a5">A5</div>
+                    <div class="seat a6">A6</div>
+                    <div class="seat a7">A7</div>
+                    <div class="seat a8">A8</div>
+                    <div class="seat a9">A9</div>
+                    <div class="seat a10">A10</div>
+                    <div class="seat a11">A11</div>
+                    <div class="seat a12">A12</div>
+                    <div class="seat a13">A13</div>
+                    <div class="seat a14">A14</div>
+                    <div class="seat a15">A15</div>
+                    <div class="seat a16">A16</div>
+                    <div class="seat a17">A17</div>
+                    <div class="seat a18">A18</div>
+                    <div class="seat a19">A19</div>
+                    <div class="seat a20">A20</div>
+                    <div class="seat a21">A21</div>
+                    <div class="seat a22">A22</div>
+                    <div class="seat a23">A23</div>
+                    <div class="seat a24">A24</div>
+                    <div class="seat a25">A25</div>
+                    <div class="seat a26">A26</div>
+                    <div class="seat a27">A27</div>
+                    <div class="seat a28">A28</div>
+    
+                    <!-- ME Sections -->
+                    <div class="me me1">ME1</div>
+                    <div class="me me2">ME2</div>
+                    <div class="me me3">ME3</div>
+                    <div class="me me4">ME4</div>
+                    <div class="me me5">ME5</div>
+                    <div class="me me6">ME6</div>
+                    <div class="me me7">ME7</div>
+                </div>
+    
+                <!-- UPPER FLOOR Plan -->
+                <div class="text-white text-center mt-4 mb-2">
+                    <h3 class="text-xl font-bold">UPPER FLOOR</h3>
+                </div>
+                <div class="upper-floor-plan-container">
+                    <div class="stage2">STAGE</div>
+                    <div class="stairs top-left2">STAIRS</div>
+                    <div class="stairs top-right2">STAIRS</div>
+                    <div class="stairs bottom-right2">STAIRS</div>
+                    <div class="stairs bottom-left2">CR</div>
+                    
+                    <!-- MD and MC Sections -->
+                    <div class="md md1">MD1</div>
+                    <div class="md md2">MD2</div>
+                    <div class="md md3">MD3</div>
+                    <div class="mc mc1">MC1</div>
+                    <div class="mc mc2">MC2</div>
+                    <div class="mc mc3">MC3</div>
+                    <div class="mc mc4">MC4</div>
+    
+                    <!-- MB Sections -->
+                    <div class="mb mb1">MB1</div>
+                    <div class="mb mb2">MB2</div>
+                    <div class="mb mb3">MB3</div>
+                    <div class="mb mb4">MB4</div>
+                    <div class="mb mb5">MB5</div>
+                    <div class="mb mb6">MB6</div>
+    
+                    <!-- Center Block -->
+                    <div class="center"></div>
+                </div>
             </div>
         </div>
     </div>
-</div>
-
-@include('layouts._footer')
+    
+    @include('layouts._footer')
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -611,7 +698,7 @@
                         <li>VIP guests must avail 1 bundle to reserve their VIP couch.</li>
                         <li>The VIP couch can accommodate 10-12 people.</li>
                         <li>To secure your reservation, a non-refundable downpayment of Php 1,000 should be settled. This amount will be deducted from the total bill on the day of your reservation.</li>
-                        <li>Your table will be held for a duration of 1 hour. If your party has not arrived within this time, we reserve the right to disregard your reservation. (Waiting time starts at 8PM)</li>
+                        <li>Your table will be held for a duration of 2 hours. If your party has not arrived within this time, we reserve the right to disregard your reservation. (Waiting time starts at 8PM)</li>
                         <li>Entrance fee will be charged to your total bill.</li>
                     </ul>
                 `;
@@ -623,8 +710,10 @@
                     <h3 class="font-bold">TABLE COCKTAIL RESERVATION:</h3>
                     <ul>
                         <li>Minimum of 2 orders of cocktail towers or 1 hard drink.</li>
+                        <li>The VIP couch can accommodate 10-12 people.</li>
+
                         <li>To secure your reservation, a non-refundable downpayment of Php 1,000 should be settled. This amount will be deducted from the total bill on the day of your reservation.</li>
-                        <li>Your table will be held for a duration of 30 mins. If your party has not arrived within this time, we reserve the right to disregard your reservation. (Waiting time starts at 8PM)</li>
+                        <li>Your table will be held for a duration of 2 hours. If your party has not arrived within this time, we reserve the right to disregard your reservation. (Waiting time starts at 8PM)</li>
                     </ul>
                 `;
                 tableSelectionDiv.style.display = 'block';

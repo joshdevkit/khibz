@@ -14,17 +14,23 @@ class ReservationController extends Controller
         return view('reservation');
     }
 
-    // Display reservation details based on the selected date
     public function details(Request $request)
     {
         $selectedDate = $request->input('date');
 
-        // Fetch reserved tables for the selected date
+        // Fetch reserved tables for the selected date (Pending status)
         $reservedTables = Reservation::whereDate('date', $selectedDate)
+            ->where('status', 'Pending')
             ->pluck('table_number')
-            ->toArray(); // Get the list of reserved table numbers
+            ->toArray();
 
-        return view('reservation-details', compact('reservedTables', 'selectedDate'));
+        // Fetch completed tables for the selected date (Completed status)
+        $completedTables = Reservation::whereDate('date', $selectedDate)
+            ->where('status', 'Completed')
+            ->pluck('table_number')
+            ->toArray();
+
+        return view('reservation-details', compact('reservedTables', 'completedTables', 'selectedDate'));
     }
 
     // Show the reservation form with selected table and date

@@ -11,11 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('orders', function (Blueprint $table) {
-            $table->id();
-            $table->string('customer_name');
-            $table->decimal('total', 10, 2); // Adjust as needed
-            $table->timestamps();
+        Schema::table('reservations', function (Blueprint $table) {
+            $table->text('request_reason')->nullable()->after('screenshot'); // Adds 'request' column after 'screenshot'
         });
     }
 
@@ -24,6 +21,8 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('orders');
+        Schema::table('reservations', function (Blueprint $table) {
+            $table->dropColumn('request_reason'); // Removes 'request' column
+        });
     }
 };

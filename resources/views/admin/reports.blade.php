@@ -139,6 +139,7 @@
                         <th>Email</th>
                         <th>Contact</th>
                         <th>Guests</th>
+                        <th>Guest_Reason</th>
                         <th>Table Number</th>
                         <th>Selected Date</th>
                         <th>Status</th>
@@ -154,6 +155,7 @@
                     <td>${reservation.email}</td>
                     <td>${reservation.contact}</td>
                     <td>${reservation.guests}</td>
+                    <th>${reservation.request_reason}</td>
                     <td>${reservation.table_number}</td>
                     <td>${new Date(reservation.date).toLocaleDateString()}</td>
                     <td>Completed</td>
@@ -265,6 +267,10 @@
                             <i class="fas fa-calendar-day text-gray-500 mr-2"></i>
                             <strong>Booked Date:</strong> ${new Date(reservation.created_at).toLocaleDateString()}
                         </p>
+                        ${reservation.request_reason ? `<p class="flex items-center mb-2">
+                            <i class="fas fa-comment-alt text-gray-500 mr-2"></i>
+                            <strong>Request Reason:</strong> ${reservation.request_reason}
+                        </p>` : ''}
                         ${reservation.screenshot ? `<p class="flex items-center mb-2">
                             <i class="fas fa-file-image text-gray-500 mr-2"></i>
                             <strong>Payment Screenshot:</strong>

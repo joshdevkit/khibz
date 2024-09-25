@@ -2,15 +2,23 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
-    use HasFactory;
+    protected $fillable = ['table_id', 'total_price', 'status'];
 
-    protected $fillable = [
-        'customer_name',
-        'total',
-    ];
+    // Define a relationship to the OrderItem model
+    public function items()
+    {
+        return $this->hasMany(OrderItem::class);
+    }
+
+    // Add an accessor to get the total amount for an order
+    public function getTotalAmountAttribute()
+    {
+        return $this->items->sum(function ($item) {
+            return $item->price * $item->quantity;
+        });
+    }
 }

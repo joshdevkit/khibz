@@ -4,59 +4,79 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Order;
-use SimpleSoftwareIO\QrCode\Facades\QrCode; // Import the QR code facade
+use App\Models\OrderItem;
 
 class OrderController extends Controller
 {
-    /**
-     * Display the specified order with a QR code.
-     *
-     * @param  int  $id
-     * @return \Illuminate\View\View
-     */
-    public function show($id)
-    {
-        // Find the order by its ID or fail if it doesn't exist
-        $order = Order::findOrFail($id);
-
-        // Generate a QR code for the order
-        $qrCode = QrCode::size(200)->generate(route('order.show', $order->id));
-
-        // Return the view with the order and QR code
-        return view('order.show', compact('order', 'qrCode'));
-    }
-
-    /**
-     * Show the form for creating a new order.
-     *
-     * @return \Illuminate\View\View
-     */
-    public function create()
-    {
-        // Return the view for creating a new order
-        return view('order.create');
-    }
-
-    /**
-     * Store a newly created order in the database.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse
-     */
     public function store(Request $request)
     {
-        // Validate the incoming request data
-        $request->validate([
-            'customer_name' => 'required|string|max:255',
-            'total' => 'required|numeric',
-            // Add other fields and validation rules as necessary
+        // Validate the incoming data
+        $validatedData = $request->validate([
+            'table_id' => 'required|string',
+            'items' => 'required|array',
+            'items.*.name' => 'required|string',
+            'items.*.price' => 'required|numeric',
+            'items.*.quantity' => 'required|integer|min:1',
         ]);
 
-        // Create a new order using the validated data
-        $order = Order::create($request->all());
+        // Create the order in the database
+        $order = Order::create([
+            'table_id' => $validatedData['table_id'],
+            'total_price' => collect($validatedData['items'])->sum(function($item) {
+                return $item['price'] * $item['quantity'];
+            })
+        ]);
 
-        // Redirect to the order show page with a success message
-        return redirect()->route('order.show', $order->id)
-                         ->with('success', 'Order created successfully.');
+        // Save each order item
+        foreach ($validatedData['items'] as $item) {
+            OrderItem::create([
+                'order_id' => $order->id,
+                'name' => $item['name'],
+                'price' => $item['price'],
+                'quantity' => $item['quantity']
+            ]);
+        }
+
+        // Return a success response
+        return response()->json(['success' => true, 'message' => 'Order placed successfully.']);
     }
+
+    public function index()
+    {
+        // Eager load the items to avoid N+1 query problem
+        $orders = Order::with('items')->get();
+        
+        return view('admin.orders.index', compact('orders'));
+    }
+    
+    public function show(Order $order)
+    {
+        $order->load('items'); // Load related order items
+        return response()->json($order);
+    }
+
+    public function destroy(Order $order)
+    {
+        $order->items()->delete(); // Delete related items
+        $order->delete(); // Delete the order
+    
+        return redirect()->route('admin.orders')->with('success', 'Order deleted successfully.');
+    }
+    
+    public function updateStatus(Request $request, $orderId)
+    {
+        // Validate that the status is either Pending, Completed, or Cancelled
+        $request->validate([
+            'status' => 'required|in:Pending,Completed,Cancelled',
+        ]);
+    
+        // Find the order by ID and update the status
+        $order = Order::findOrFail($orderId);
+        $order->status = $request->status;
+        $order->save();
+    
+        return response()->json(['success' => true]);
+    }
+    
+
 }

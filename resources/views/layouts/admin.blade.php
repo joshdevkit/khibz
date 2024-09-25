@@ -36,6 +36,14 @@
                             <i class="fas fa-utensils mr-3"></i> Manage Menu
                         </a>
                     </li>
+        
+                    <!-- New Manage Order Section -->
+                    <li>
+                        <a href="{{ route('admin.orders') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
+                            <i class="fas fa-clipboard-list mr-3"></i> Manage Orders
+                        </a>
+                    </li>
+        
                     <li>
                         <a href="{{ route('admin.users') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
                             <i class="fas fa-users mr-3"></i> Manage Events
@@ -54,6 +62,7 @@
                 </ul>
             </nav>
         </aside>
+        
 
         <main class="flex-1 p-8">
             <header class="flex justify-between items-center mb-6">

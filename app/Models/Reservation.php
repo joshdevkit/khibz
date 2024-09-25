@@ -19,7 +19,8 @@ class Reservation extends Model
         'guests',
         'payment_reference',
         'screenshot',
-        'date', 
+        'date',
+        'request_reason', 
     ];
 }
 

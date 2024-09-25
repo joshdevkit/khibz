@@ -6,8 +6,7 @@
     <title>Khibz Lounge - Reservation Form</title>
     @vite('resources/css/app.css')
     <style>
-        /* Modal and Success Message Styles */
-        .modal {
+        .modal, .request-modal {
             display: none;
             position: fixed;
             z-index: 30;
@@ -20,7 +19,7 @@
             align-items: center;
             animation: fadeIn 0.3s ease-out forwards;
         }
-        .modal-content {
+        .modal-content, .request-modal-content {
             position: relative;
             padding: 2rem;
             border-radius: 15px;
@@ -81,7 +80,13 @@
         .button-confirm:hover {
             background-color: #0056b3;
         }
-        /* Success Animation Card Style */
+        .button-request {
+            background-color: #ffc107;
+            color: #333;
+        }
+        .button-request:hover {
+            background-color: #e5b806;
+        }
         .card {
             display: none;
             overflow: hidden;
@@ -220,7 +225,6 @@
 
         <div class="bg-white text-black p-8 rounded shadow-lg mx-auto max-w-md">
             <h2 class="text-xl font-bold mb-4 text-center">Fill Out Reservation Details</h2>
-            <!-- Form -->
             <form method="POST" action="{{ route('reservation.submit') }}" enctype="multipart/form-data" id="reservationForm">
                 @csrf
                 <div class="mb-4">
@@ -233,7 +237,7 @@
                     <span id="emailError" class="text-red-500 text-sm"></span>
                 </div>
                 <div class="mb-4">
-                    <label for="contact" class="block text-sm font-semibold mb-2">Phone:</label>
+                    <label for="contact" class="block text-sm font-semibold mb-2">Phone Number:</label>
                     <input type="text" id="contact" name="contact" required class="w-full p-2 border border-gray-300 rounded">
                     <span id="phoneError" class="text-red-500 text-sm"></span>
                 </div>
@@ -241,12 +245,17 @@
                     <label for="guests" class="block text-sm font-semibold mb-2">Number of Guests:</label>
                     <input type="number" id="guests" name="guests" min="1" max="12" required class="w-full p-2 border border-gray-300 rounded" oninput="checkGuestCount()">
                     <span id="guestError" class="text-red-500 text-sm"></span>
+                    <div id="guestRequestMessage" class="mt-2 hidden text-green-500">
+                        Requested <button type="button" class="text-red-500 ml-2" onclick="cancelRequest()">x</button>
+                    </div>
                 </div>
                 
+                <div id="requestExceptionButton" class="mb-4 hidden">
+                    <button type="button" onclick="openRequestModal()" class="button button-request w-full">Request for More Guests</button>
+                </div>
                 
                 <div class="mb-4">
                     <label for="screenshot" class="block text-sm font-semibold mb-2">Screenshot of Payment:</label>
-                    <!-- GCash Payment Information -->
                     <div class="mb-2 p-3 bg-gray-100 text-gray-700 rounded">
                         You may send/transfer your downpayment to our GCash.<br>
                         <strong>Eliseo C.</strong><br>
@@ -258,6 +267,7 @@
                 
                 <input type="hidden" id="selectedTable" name="selectedTable" value="{{ $selectedTable }}">
                 <input type="hidden" id="date" name="date" value="{{ $selectedDate }}">
+                <input type="hidden" id="requestReasonInput" name="requestReason" value="">
 
                 <div class="flex justify-between mt-4">
                     <button type="button" onclick="history.back()" class="bg-gray-500 text-white py-2 px-4 rounded">Back</button>
@@ -265,7 +275,6 @@
                 </div>
             </form>
 
-            <!-- Modal for Confirmation -->
             <div id="confirmationModal" class="modal">
                 <div class="modal-content">
                     <span class="close" onclick="closeModal()">&times;</span>
@@ -279,6 +288,7 @@
                             <li><strong>Number of Guests:</strong> <span id="confirmGuests"></span></li>
                             <li><strong>Selected Table:</strong> <span id="confirmTable"></span></li>
                             <li><strong>Selected Date:</strong> <span id="confirmDate"></span></li>
+                            <li id="confirmRequestReason" class="hidden"><strong>Request Reason:</strong> <span></span></li>
                         </ul>
                     </div>
                     <div class="modal-footer">
@@ -288,7 +298,21 @@
                 </div>
             </div>
 
-            <!-- Success Message -->
+            <div id="requestModal" class="request-modal">
+                <div class="request-modal-content">
+                    <span class="close" onclick="closeRequestModal()">&times;</span>
+                    <div class="modal-header">Request for Additional Guests</div>
+                    <div class="modal-body">
+                        <p>Please provide a reason or special request to exceed the maximum guest limit:</p>
+                        <textarea id="requestReason" rows="4" class="w-full p-2 border border-gray-300 rounded"></textarea>
+                    </div>
+                    <div class="modal-footer">
+                        <button onclick="closeRequestModal()" class="button button-edit">Cancel</button>
+                        <button onclick="submitRequest()" class="button button-confirm">Submit Request</button>
+                    </div>
+                </div>
+            </div>
+
             <div id="successMessage" class="card">
                 <button class="dismiss" type="button" onclick="closeSuccessMessage()">×</button>
                 <div class="header">
@@ -319,7 +343,7 @@
 <script>
     function checkFileSize(event) {
         const file = event.target.files[0];
-        const maxSize = 2 * 1024 * 1024; // 2MB
+        const maxSize = 2 * 1024 * 1024;
         const fileError = document.getElementById('fileError');
 
         if (!file) {
@@ -371,13 +395,21 @@
         const guests = document.getElementById('guests').value;
         const selectedTable = document.getElementById('selectedTable').value;
         const date = document.getElementById('date').value;
+        const requestReason = document.getElementById('requestReasonInput').value;
 
         document.getElementById('confirmName').textContent = name;
         document.getElementById('confirmEmail').textContent = email;
         document.getElementById('confirmPhone').textContent = contact;
-        document.getElementById('confirmGuests').textContent = guests;
+        document.getElementById('confirmGuests').textContent = guests || 'Requested';
         document.getElementById('confirmTable').textContent = selectedTable;
         document.getElementById('confirmDate').textContent = date;
+
+        if (requestReason) {
+            document.getElementById('confirmRequestReason').classList.remove('hidden');
+            document.getElementById('confirmRequestReason').querySelector('span').textContent = requestReason;
+        } else {
+            document.getElementById('confirmRequestReason').classList.add('hidden');
+        }
 
         document.getElementById('confirmationModal').style.display = 'flex';
     }
@@ -388,10 +420,10 @@
 
     function submitForm() {
         document.getElementById('confirmationModal').style.display = 'none';
-        document.getElementById('successMessage').style.display = 'block'; // Show success message
+        document.getElementById('successMessage').style.display = 'block';
         setTimeout(() => {
             document.getElementById('reservationForm').submit();
-        }, 2000); // Wait for 2 seconds before submitting the form
+        }, 2000);
     }
 
     function closeSuccessMessage() {
@@ -401,14 +433,44 @@
     function checkGuestCount() {
         const guestInput = document.getElementById('guests');
         const guestError = document.getElementById('guestError');
+        const requestButton = document.getElementById('requestExceptionButton');
         const maxGuests = 12;
 
         if (parseInt(guestInput.value) > maxGuests) {
             guestError.textContent = 'The maximum number of guests is 12.';
-            guestInput.value = maxGuests; // Reset to max if exceeded
+            guestInput.value = maxGuests; 
+            requestButton.classList.remove('hidden');
         } else {
             guestError.textContent = '';
+            requestButton.classList.add('hidden');
         }
+    }
+
+    function openRequestModal() {
+        document.getElementById('requestModal').style.display = 'flex';
+    }
+
+    function closeRequestModal() {
+        document.getElementById('requestModal').style.display = 'none';
+    }
+
+    function submitRequest() {
+        const reason = document.getElementById('requestReason').value;
+        if (reason.trim() === '') {
+            alert('Please provide a reason for the request.');
+            return;
+        }
+        document.getElementById('requestReasonInput').value = reason;
+        document.getElementById('requestModal').style.display = 'none';
+        document.getElementById('guests').disabled = true;
+        document.getElementById('guests').value = '';
+        document.getElementById('guestRequestMessage').classList.remove('hidden');
+    }
+
+    function cancelRequest() {
+        document.getElementById('requestReasonInput').value = '';
+        document.getElementById('guests').disabled = false;
+        document.getElementById('guestRequestMessage').classList.add('hidden');
     }
 </script>
 

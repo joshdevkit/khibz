@@ -4,8 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('title', 'Admin Dashboard')</title>
-    @vite('resources/css/app.css')
+    
+    <!-- Bootstrap 5 CSS and FontAwesome -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+    <!-- Vite (For custom assets) -->
+    @vite('resources/css/app.css')
+
+    <!-- Optional JavaScript -->
     <script>
         function toggleDropdown() {
             document.getElementById('userDropdown').classList.toggle('hidden');
@@ -13,10 +20,9 @@
     </script>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
-
     <div class="flex min-h-screen">
-        <aside class="w-64 bg-sidebar-bg p-6 shadow-lg">
-            <div class="text-white font-bold text-2xl mb-8 flex items-center">
+        <aside class="w-64 bg-dark text-white p-6 shadow-lg">
+            <div class="font-bold text-2xl mb-8 flex items-center">
                 <i class="fas fa-pizza-slice mr-2"></i> Khibz Lounge
             </div>
             <nav>
@@ -36,14 +42,11 @@
                             <i class="fas fa-utensils mr-3"></i> Manage Menu
                         </a>
                     </li>
-        
-                    <!-- New Manage Order Section -->
                     <li>
                         <a href="{{ route('admin.orders') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
                             <i class="fas fa-clipboard-list mr-3"></i> Manage Orders
                         </a>
                     </li>
-        
                     <li>
                         <a href="{{ route('admin.users') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
                             <i class="fas fa-users mr-3"></i> Manage Events
@@ -63,7 +66,6 @@
             </nav>
         </aside>
         
-
         <main class="flex-1 p-8">
             <header class="flex justify-between items-center mb-6">
                 <h1 class="text-3xl font-bold text-gray-800">@yield('title')</h1>
@@ -92,5 +94,13 @@
         </main>
     </div>
 
+    <!-- Include Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- FontAwesome JS (For icons) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
+
+    <!-- Custom Scripts -->
+    @stack('scripts')
 </body>
 </html>

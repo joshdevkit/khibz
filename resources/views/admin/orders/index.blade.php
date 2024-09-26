@@ -147,20 +147,21 @@
             }
         })
         .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                Swal.fire({
-                    title: 'Deleted!',
-                    text: 'Order has been deleted.',
-                    icon: 'success',
-                    timer: 1500,
-                    showConfirmButton: false
-                });
-                setTimeout(() => location.reload(), 2000);
-            } else {
-                Swal.fire('Error', 'Failed to delete order', 'error');
-            }
-        })
+            .then(data => {
+                if (data.success) {
+                    Swal.fire({
+                        title: 'Deleted!',
+                        text: 'Order has been deleted.',
+                        icon: 'success',
+                        timer: 1500,
+                        showConfirmButton: false
+                    });
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    Swal.fire('Error', 'Failed to delete order', 'error');
+                }
+            })
+
         .catch(error => {
             console.error('Error deleting order:', error);
             Swal.fire('Error', 'Failed to delete order', 'error');

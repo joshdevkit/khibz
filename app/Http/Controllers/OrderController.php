@@ -43,8 +43,9 @@ class OrderController extends Controller
 
     public function index()
     {
-        // Eager load the items to avoid N+1 query problem
         $orders = Order::with('items')->get();
+        $orders = Order::orderByRaw("FIELD(status, 'Pending', 'Cancelled', 'Completed')")->get();
+
         
         return view('admin.orders.index', compact('orders'));
     }
@@ -57,11 +58,21 @@ class OrderController extends Controller
 
     public function destroy(Order $order)
     {
-        $order->items()->delete(); // Delete related items
-        $order->delete(); // Delete the order
+        try {
+            // Delete related order items
+            $order->items()->delete();
     
-        return redirect()->route('admin.orders')->with('success', 'Order deleted successfully.');
+            // Delete the order
+            $order->delete();
+    
+            // Return a success response in JSON
+            return response()->json(['success' => true, 'message' => 'Order deleted successfully.']);
+        } catch (\Exception $e) {
+            // Catch any errors and return a failure response
+            return response()->json(['success' => false, 'message' => 'Failed to delete order.']);
+        }
     }
+    
     
     public function updateStatus(Request $request, $orderId)
     {

@@ -1,3 +1,79 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom styles for the dashboard */
+.dashboard-title {
+    font-size: 2rem; /* Adjusted */
+    font-weight: bold;
+    color: #333;
+}
+
+/* Card Styling */
+.card {
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Icon Styling */
+.icon-container {
+    font-size: 2.5rem; /* Increased icon size */
+    padding: 10px;
+    border-radius: 50%;
+    background-color: #f1f1f1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* For Titles in Cards like Monthly Sales, Reservations, etc. */
+.card-title {
+    font-size: 1.75rem; /* Match the font size of "Monthly Sales", "Monthly Reservations" */
+    font-weight: bold;
+    color: #333;
+}
+
+/* For Card Descriptions */
+.card-text {
+    font-size: 1.1rem; /* For descriptions like "Sales for this month" */
+    color: #6c757d;
+}
+
+/* Styling for Stats Cards like Total Users, Pending Orders, etc. */
+.stats-card-title {
+    font-size: 1.6rem; /* Adjusted for better readability */
+    font-weight: bold;
+    color: #333;
+}
+
+.stats-card-text {
+    font-size: 1.1rem; /* Adjust subtext size */
+    color: #6c757d;
+}
+
+/* Ensure hover effect is consistent */
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Additional Responsive Adjustments */
+@media (max-width: 768px) {
+    .card {
+        padding: 15px;
+    }
+    .icon-container {
+        font-size: 2rem;
+    }
+    .card-title {
+        font-size: 1.5rem;
+    }
+    .stats-card-title {
+        font-size: 1.5rem;
+    }
+}

@@ -9,6 +9,7 @@ use App\Http\Controllers\MenuController;
 use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CartController;
+use App\Http\Controllers\DashboardController;
 
 
 
@@ -69,6 +70,7 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/admin/orders', [OrderController::class, 'index'])->name('admin.orders.index');
     Route::get('/admin/orders', [OrderController::class, 'index'])->name('admin.orders');
     Route::post('/admin/orders/{order}/update-status', [OrderController::class, 'updateStatus']);
+    Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
 
 });
 

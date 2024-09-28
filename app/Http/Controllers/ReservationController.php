@@ -4,15 +4,20 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Reservation;
+use App\Models\Event;
 use Illuminate\Support\Facades\Log;
 
 class ReservationController extends Controller
 {
-    // Display the main reservation view
     public function index()
     {
-        return view('reservation');
+        // Fetch all events, regardless of date
+        $events = Event::all();
+    
+        return view('reservation', compact('events'));
     }
+    
+    
 
     public function details(Request $request)
     {

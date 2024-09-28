@@ -10,6 +10,8 @@ use App\Http\Controllers\MenuItemController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EventController;
+
 
 
 
@@ -72,6 +74,13 @@ Route::middleware(['auth', 'admin'])->group(function () {
     Route::post('/admin/orders/{order}/update-status', [OrderController::class, 'updateStatus']);
     Route::get('/admin', [DashboardController::class, 'index'])->name('admin.dashboard');
 
+    Route::get('events', [EventController::class, 'index'])->name('admin.events'); // List events
+    Route::get('events/create', [EventController::class, 'create'])->name('admin.events.create'); // Form to create a new event
+    Route::post('events', [EventController::class, 'store'])->name('admin.events.store'); // Store the new event
+    Route::delete('events/{event}', [EventController::class, 'destroy'])->name('admin.events.destroy'); // Delete event
+    Route::get('/admin/events/{id}/edit', [EventController::class, 'edit'])->name('admin.events.edit');
+    Route::post('/admin/events/{id}', [EventController::class, 'update'])->name('admin.events.update');
+    
 });
 
 // Authentication routes

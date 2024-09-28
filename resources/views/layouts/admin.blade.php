@@ -18,6 +18,9 @@
             document.getElementById('userDropdown').classList.toggle('hidden');
         }
     </script>
+
+    <!-- Include SweetAlert -->
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
 <body class="bg-gray-100 font-sans leading-normal tracking-normal">
     <div class="flex min-h-screen">
@@ -48,7 +51,7 @@
                         </a>
                     </li>
                     <li>
-                        <a href="{{ route('admin.users') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
+                        <a href="{{ route('admin.events') }}" class="flex items-center px-4 py-2 text-white hover:bg-gray-700 rounded transition duration-200">
                             <i class="fas fa-users mr-3"></i> Manage Events
                         </a>
                     </li>
@@ -100,7 +103,19 @@
     <!-- FontAwesome JS (For icons) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/js/all.min.js"></script>
 
-    <!-- Custom Scripts -->
+    <!-- SweetAlert for Success Message -->
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Success',
+                text: '{{ session("success") }}',
+                timer: 3000,
+                showConfirmButton: false,
+            });
+        </script>
+    @endif
+
     @stack('scripts')
 </body>
 </html>

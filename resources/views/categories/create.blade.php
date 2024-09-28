@@ -8,12 +8,25 @@
 
     <form action="{{ route('categories.store') }}" method="POST">
         @csrf
+
+        <!-- Category Name Input Field -->
         <div class="mb-4">
-            <label for="name" class="block text-gray-700">Category Name:</label>
-            <input type="text" name="name" id="name" class="border border-gray-300 p-2 w-full" required>
+            <label for="name" class="block text-gray-700 font-semibold">Category Name:</label>
+            <input type="text" name="name" id="name" class="border border-gray-300 p-2 w-full rounded" required>
         </div>
 
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Create Category</button>
+        <!-- Action Buttons (Create and Cancel) -->
+        <div class="flex justify-between items-center mt-8">
+            <!-- Create Button on the Left -->
+            <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded shadow">
+                Create Category
+            </button>
+
+            <!-- Cancel Button on the Right -->
+            <a href="{{ route('categories.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded shadow">
+                Cancel
+            </a>
+        </div>
     </form>
 </div>
 @endsection

@@ -3,50 +3,55 @@
 @section('title', 'Manage Events')
 
 @section('content')
-<div class="bg-white p-6 rounded-lg shadow-lg">
-    <div class="flex justify-between items-center mb-6">
-        <a href="{{ route('admin.events.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition">
-            <i class="fas fa-plus mr-2"></i> Add Event
+<div class="bg-white p-8 rounded-lg shadow-lg mb-10">
+    <!-- Header: Add Event Button -->
+    <div class="flex justify-between items-center mb-8">
+        <!-- Add Event Button -->
+        <a href="{{ route('admin.events.create') }}" class="bg-gradient-to-r from-blue-500 to-indigo-500 text-white px-6 py-3 rounded-lg shadow-md font-semibold flex items-center space-x-2 transition ease-in-out duration-300 hover:from-blue-600 hover:to-indigo-600 hover:shadow-lg">
+            <i class="fas fa-plus"></i>
+            <span>Add Event</span>
         </a>
     </div>
 
-    <!-- Table for Events -->
+    <!-- Events Table -->
     <div class="overflow-x-auto">
-        <table class="min-w-full bg-white border border-gray-200">
-            <thead class="bg-gray-50">
+        <table class="min-w-full bg-white border border-gray-200 rounded-lg shadow-sm">
+            <thead class="bg-gray-100">
                 <tr>
-                    <th class="py-3 px-6 text-left font-semibold text-gray-700">Title</th>
-                    <th class="py-3 px-6 text-left font-semibold text-gray-700">DJ</th>
-                    <th class="py-3 px-6 text-left font-semibold text-gray-700">Event Date</th>
-                    <th class="py-3 px-6 text-left font-semibold text-gray-700">Image</th>
-                    <th class="py-3 px-6 text-left font-semibold text-gray-700">Actions</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold text-gray-700">Title</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold text-gray-700">DJ</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold text-gray-700">Event Date</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold text-gray-700">Image</th>
+                    <th class="py-4 px-6 text-left text-sm font-semibold text-gray-700">Actions</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody class="divide-y divide-gray-200">
                 @foreach($events as $event)
-                    <tr class="border-b">
-                        <td class="py-4 px-6">{{ $event->title }}</td>
-                        <td class="py-4 px-6">{{ $event->dj_name }}</td>
-                        <td class="py-4 px-6">{{ $event->event_date->format('F j, Y') }}</td>
+                    <tr class="hover:bg-gray-50 transition ease-in-out duration-150">
+                        <td class="py-4 px-6 text-sm text-gray-900">{{ $event->title }}</td>
+                        <td class="py-4 px-6 text-sm text-gray-900">{{ $event->dj_name }}</td>
+                        <td class="py-4 px-6 text-sm text-gray-900">{{ $event->event_date->format('F j, Y') }}</td>
                         <td class="py-4 px-6">
                             @if($event->image)
-                                <img src="{{ asset('storage/' . $event->image) }}" alt="Event Image" class="w-20 h-20 object-cover rounded-lg">
+                                <img src="{{ asset('storage/' . $event->image) }}" alt="Event Image" class="w-16 h-16 object-cover rounded-lg shadow-sm">
                             @else
                                 <span class="text-gray-500">No Image</span>
                             @endif
                         </td>
-                        <td class="py-4 px-6 flex space-x-2">
-                            <!-- Edit Button -->
-                            <a href="{{ route('admin.events.edit', $event->id) }}" class="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg transition">
-                                <i class="fas fa-edit mr-1"></i> Edit
+                        <td class="py-4 px-6 flex space-x-4">
+                            <!-- Edit Button (Blue) -->
+                            <a href="{{ route('admin.events.edit', $event->id) }}" class="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold flex items-center space-x-1 transition ease-in-out duration-300 hover:from-blue-600 hover:to-blue-700">
+                                <i class="fas fa-edit"></i>
+                                <span>Edit</span>
                             </a>
 
-                            <!-- Delete Form Button -->
-                            <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this event?');">
+                            <!-- Delete Button (Red) with SweetAlert2 confirmation -->
+                            <form action="{{ route('admin.events.destroy', $event->id) }}" method="POST" class="inline-block delete-form">
                                 @csrf
                                 @method('DELETE')
-                                <button type="submit" class="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg transition">
-                                    <i class="fas fa-trash-alt mr-1"></i> Delete
+                                <button type="button" class="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 rounded-lg shadow-md font-semibold flex items-center space-x-1 transition ease-in-out duration-300 hover:from-red-600 hover:to-red-700 delete-btn">
+                                    <i class="fas fa-trash-alt"></i>
+                                    <span>Delete</span>
                                 </button>
                             </form>
                         </td>
@@ -56,4 +61,35 @@
         </table>
     </div>
 </div>
+
+<!-- Include SweetAlert2 -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const deleteButtons = document.querySelectorAll('.delete-btn');
+        
+        deleteButtons.forEach(button => {
+            button.addEventListener('click', function () {
+                const form = this.closest('form');
+
+                // Show SweetAlert confirmation
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#d33',
+                    cancelButtonColor: '#3085d6',
+                    confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        // Submit the form if confirmed
+                        form.submit();
+                    }
+                });
+            });
+        });
+    });
+</script>
 @endsection

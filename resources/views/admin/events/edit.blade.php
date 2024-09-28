@@ -48,7 +48,13 @@
             @endif
         </div>
 
-        <button type="submit" class="btn btn-primary">Update Event</button>
+        <!-- Button group: Update and Cancel -->
+        <div class="flex justify-between">
+            <button type="submit" class="btn btn-primary">Update Event</button>
+            
+            <!-- Cancel Button -->
+            <a href="{{ route('admin.events') }}" class="btn btn-secondary">Cancel</a>
+        </div>
     </form>
 </div>
 @endsection

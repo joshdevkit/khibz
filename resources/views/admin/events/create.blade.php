@@ -49,9 +49,24 @@
             @enderror
         </div>
 
-        <div>
+        <!-- Button Group with Add and Cancel -->
+        <div class="flex justify-between">
             <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Add Event</button>
+            
+            <!-- Cancel Button -->
+            <a href="{{ route('admin.events') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 transition">
+                Cancel
+            </a>
         </div>
     </form>
 </div>
+
+<!-- JavaScript to Restrict Past Dates -->
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const eventDateInput = document.getElementById('event_date');
+        const today = new Date().toISOString().split('T')[0];
+        eventDateInput.setAttribute('min', today);
+    });
+</script>
 @endsection

@@ -74,18 +74,21 @@
                 <h1 class="text-3xl font-bold text-gray-800">@yield('title')</h1>
                 <div class="relative">
                     <button onclick="toggleDropdown()" class="flex items-center space-x-3 focus:outline-none">
-                        <img src="https://via.placeholder.com/40" alt="User Avatar" class="w-10 h-10 rounded-full">
+                        <img src="{{ asset('images/logobaboy.jpg') }}" alt="User Avatar" class="w-10 h-10 rounded-full border-2 border-gray-200 hover:border-gray-400 transition duration-200">
                         <div class="flex flex-col text-left">
                             <span class="text-gray-800 font-medium">{{ Auth::user()->name }}</span>
                             <span class="text-sm text-gray-500">{{ Auth::user()->role ?? 'Admin' }}</span>
                         </div>
-                        <i class="fas fa-chevron-down text-gray-600"></i>
+                        <i class="fas fa-chevron-down text-gray-600 transition duration-200 transform group-hover:rotate-180"></i>
                     </button>
 
-                    <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden">
+                    <!-- Improved Dropdown -->
+                    <div id="userDropdown" class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg py-2 hidden transition transform origin-top-right scale-95">
                         <form action="{{ route('logout') }}" method="POST" class="block">
                             @csrf
-                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">Logout</button>
+                            <button type="submit" class="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 hover:text-gray-900 transition duration-200">
+                                <i class="fas fa-sign-out-alt mr-2"></i> Logout
+                            </button>
                         </form>
                     </div>
                 </div>

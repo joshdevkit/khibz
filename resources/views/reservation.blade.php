@@ -39,16 +39,24 @@
             transition: background-color 0.3s ease-in-out;
         }
 
-        /* Enhanced Image Hover */
-        .image-hover:hover {
-            transform: scale(1.05);
-            transition: transform 0.3s ease-in-out;
+        /* No Events Section */
+        .no-events {
+            text-align: center;
+            font-size: 1rem;
+            color: #ff6666;
+            background-color: #f2f2f2;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            opacity: 0;
+            animation: fadeInUp 1s ease-in-out 0.5s forwards;
         }
 
-        /* Styling for upcoming events */
+        /* Styling for event section */
         .upcoming-events {
-            max-width: 900px; /* Medium width for the event section */
+            max-width: 900px;
             margin: 0 auto;
+            margin-bottom: 40px;
         }
 
         .event-card {
@@ -57,23 +65,23 @@
             border-radius: 12px;
             padding: 20px;
             margin-bottom: 20px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
-            transition: transform 0.3s ease-in-out;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s;
             text-align: center;
         }
 
         .event-card:hover {
             transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
         }
 
-        /* Updated image styling for full width */
         .event-image {
             width: 100%;
             height: auto;
             border-radius: 12px;
             object-fit: cover;
             margin-bottom: 15px;
-            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
         }
 
         /* Reservation Form Styling */
@@ -84,13 +92,13 @@
             border-radius: 12px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
             color: #000;
-            margin-top: 40px;
-            text-align: center;
+            margin: 40px auto;
         }
 
         .reservation-form h2 {
             font-size: 1.75rem;
             margin-bottom: 20px;
+            text-align: center;
             font-weight: bold;
         }
 
@@ -112,29 +120,38 @@
             border-radius: 8px;
             width: 100%;
             margin-top: 15px;
+            transition: background-color 0.3s ease-in-out;
         }
 
+        /* Event Description Styling */
         .upcoming-events h2 {
-            font-size: 2rem;
+            font-size: 2.2rem;
             text-align: center;
             margin-bottom: 20px;
+            color: #ff6666;
+            letter-spacing: 1px;
         }
 
         .event-description {
-            font-size: 0.9rem;
-            color: #333;
+            font-size: 0.95rem;
+            color: #555;
             text-align: center;
         }
 
-        /* No upcoming events message */
-        .no-events {
-            background-color: #f8f8f8;
+        /* Responsive Image Grid Below */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             padding: 20px;
+        }
+
+        .gallery-item {
+            height: 250px;
+            background-position: center;
+            background-size: cover;
             border-radius: 12px;
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-            margin-top: 20px;
-            text-align: center;
-            color: #333;
         }
 
         /* Responsive Design */
@@ -169,16 +186,13 @@
         <!-- Upcoming Events Section First -->
         <div class="upcoming-events">
             <h2 class="text-3xl font-bold mb-6 text-center">UPCOMING EVENTS</h2>
-            
             @if($events->isEmpty())
-                <!-- Display this when there are no upcoming events -->
-                <div class="no-events fadeInUp">
-                    <h3 class="text-2xl font-semibold mb-4">No Upcoming Events</h3>
-                    <p>Stay tuned for our future events. Keep checking back for updates!</p>
-                </div>
+                <!-- Display when there are no upcoming events -->
+                <div class="no-events"><h3 class="text-2xl font-semibold mb-4">No Upcoming Events</h3>
+                    <p>Stay tuned for our future events. Keep checking back for updates!</p></div>
             @else
                 @foreach($events as $event)
-                <div class="event-card fadeInUp">
+                <div class="event-card">
                     <div class="image-container">
                         <img src="{{ asset('storage/' . $event->image) }}" alt="Event Image" class="event-image">
                     </div>
@@ -212,7 +226,7 @@
         </div>
 
         <!-- Reservation Form Section at the Bottom -->
-        <div class="reservation-form mx-auto fadeInUp">
+        <div class="reservation-form mx-auto">
             <h2 class="text-2xl font-bold">SELECT A DATE</h2>
             <form method="GET" action="{{ route('reservation.details') }}">
                 <div class="mb-6">

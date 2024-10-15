@@ -480,37 +480,32 @@
         .cross-out {
             position: relative;
             color: #ccc;
-            /* Dimmed color for reserved seats */
-            opacity: 0.6;
-            /* Reduce opacity to give a "disabled" feel */
             background-color: rgba(0, 0, 0, 0.1);
-            /* Light background overlay */
             border-radius: 4px;
-            /* Slightly rounded corners */
             padding: 5px;
-            /* Optional: add padding for better spacing */
         }
 
-        .cross-out::after {
-            content: "";
+        .cross-out::before {
+            content: "X";
             position: absolute;
             top: 50%;
-            /* Position the line across the middle */
-            left: 5%;
-            /* Small margin from left */
-            right: 5%;
-            /* Small margin from right */
-            height: 3px;
-            /* Thickness of the line */
-            background-color: #ff6666;
-            /* Distinct red color for the line */
-            transform: translateY(-50%);
-            /* Center the line vertically */
-            border-radius: 2px;
-            /* Rounded line for a softer look */
-            opacity: 0.8;
-            /* Make the line slightly transparent */
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 25px;
+            color: #ff6666;
+            font-weight: bold;
         }
+
+        .mb ..cross-out {
+            position: relative;
+            color: #ccc !important;
+            opacity: 0.6;
+            background-color: rgba(0, 0, 0, 0.1) !important;
+            border-radius: 4px;
+            padding: 5px;
+        }
+
+
 
 
 
@@ -1046,71 +1041,88 @@
                     <div class="stairs bottom-left2">CR</div>
 
                     <!-- MD and MC Sections -->
-                    <div class="md md1 {{ in_array('MD1', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MD1', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="md md1
+        {{ in_array('MD1', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MD1', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MD1
                     </div>
 
-                    <div class="md md2 {{ in_array('MD2', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MD2', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="md md2
+        {{ in_array('MD2', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MD2', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MD2
                     </div>
 
-                    <div class="md md3 {{ in_array('MD3', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MD3', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="md md3
+        {{ in_array('MD3', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MD3', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MD3
                     </div>
 
-                    <div class="mc mc1 {{ in_array('MC1', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MC1', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mc mc1
+        {{ in_array('MC1', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MC1', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MC1
                     </div>
 
-                    <div class="mc mc2 {{ in_array('MC2', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MC2', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mc mc2
+        {{ in_array('MC2', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MC2', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MC2
                     </div>
 
-                    <div class="mc mc3 {{ in_array('MC3', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MC3', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mc mc3
+        {{ in_array('MC3', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MC3', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MC3
                     </div>
 
-                    <div class="mc mc4 {{ in_array('MC4', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MC4', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mc mc4
+        {{ in_array('MC4', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MC4', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MC4
                     </div>
 
 
-                    <div class="mb mb1 {{ in_array('MB1', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MB1', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+
+
+                    <div class="mb mb1
+    {{ in_array('MB1', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MB1', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MB1
                     </div>
 
-                    <div class="mb mb2 {{ in_array('MB2', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MB2', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mb mb2
+    {{ in_array('MB2', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MB2', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MB2
                     </div>
 
-                    <div class="mb mb3 {{ in_array('MB3', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MB3', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mb mb3
+    {{ in_array('MB3', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MB3', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MB3
                     </div>
 
-                    <div class="mb mb4 {{ in_array('MB4', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MB4', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mb mb4
+    {{ in_array('MB4', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MB4', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MB4
                     </div>
 
-                    <div class="mb mb5 {{ in_array('MB5', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MB5', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mb mb5
+    {{ in_array('MB5', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MB5', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MB5
                     </div>
 
-                    <div class="mb mb6 {{ in_array('MB6', $reservedTables) ? 'cross-out' : '' }}"
-                        style="{{ in_array('MB6', $reservedTables) ? 'background-color: #ff4d4d; color: #fff;' : '' }}">
+                    <div class="mb mb6
+    {{ in_array('MB6', $reservedTables) ? 'cross-out' : '' }}"
+                        style="{{ in_array('MB6', $reservedTables) ? ' color: #fff; text-align: center;' : 'text-align: center;' }}">
                         MB6
                     </div>
+
+
 
 
 

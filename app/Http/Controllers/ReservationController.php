@@ -26,9 +26,10 @@ class ReservationController extends Controller
 
         // Fetch reserved tables for the selected date (Pending status)
         $reservedTables = Reservation::whereDate('date', $selectedDate)
-            ->where('status', 'Pending')
+            ->whereIn('status', ['Pending', 'Completed'])
             ->pluck('table_number')
             ->toArray();
+
 
         // Fetch completed tables for the selected date (Completed status)
         $completedTables = Reservation::whereDate('date', $selectedDate)
